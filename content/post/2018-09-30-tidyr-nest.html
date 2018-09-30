@@ -1,0 +1,85 @@
+---
+title: tidyr::nest
+author: Russ Hyde
+date: '2018-09-30'
+slug: tidyr-nest
+categories:
+  - R
+tags:
+  - favouRiteThings
+  - rstats
+lastmod: '2018-09-30T20:02:51+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+
+
+<p>Originally posted 2018-05-02 to <a href="http://biolearnr.blogspot.com/2018/02/a-few-of-my-favourite-things.html">Blogger</a>.</p>
+<p>See <a href="http://stat545.com/block024_group-nest-split-map.html">here</a> and <a href="https://tidyr.tidyverse.org/reference/nest.html">here</a>.</p>
+<p>In <code>dplyr</code>, I often want to <code>group_by</code> some columns, apply a function to the subtables defined by grouping, and then dissolve away the grouping. The function applied to the subtables may return:</p>
+<ul>
+<li><p>a single row for each group - in which case you’d use <code>dplyr::summarise()</code> or <code>summarize()</code>;</p></li>
+<li><p>a row for each row in the subtable - in which case there may be an appropriate <a href="https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html">window function</a>;</p></li>
+<li><p>any number of rows for each subtable.</p></li>
+</ul>
+<p>In the latter case, you can use <code>tidyr::nest()</code>.</p>
+<p>Suppose I’ve got a data-frame with gene-expression data for three different tissues. The columns are <code>tissue</code>, <code>gene_id</code> and <code>expression</code>. For each tissue, I want to find the top-10 most highly expressed genes (according to the value of expression).</p>
+<pre class="r"><code>suppressPackageStartupMessages(
+  library(tidyverse)
+)
+set.seed(1)</code></pre>
+<pre class="r"><code>df &lt;- tibble(
+  tissue = rep(LETTERS[1:3], each = 26),
+  gene_id = rep(letters, 3),
+  expression = rnorm(78)
+)</code></pre>
+<p>The following function would extract the top-10s for a given tissue if there was only one tissue in the dataframe</p>
+<pre class="r"><code>get_top10 &lt;- function(.df){
+  .df %&gt;% 
+    dplyr::arrange(
+      dplyr::desc(expression)
+    ) %&gt;%
+    head(10)
+}</code></pre>
+<p>I could <code>split</code> the data-frame into a list based on the <code>tissue</code> values, order the subtables by expression, take the head of those subtables and join them back up. Something like:</p>
+<pre class="r"><code>df %&gt;% 
+  split(f = df$tissue) %&gt;% 
+  map_df(get_top10)</code></pre>
+<pre><code>## # A tibble: 30 x 3
+##    tissue gene_id expression
+##    &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt;
+##  1 A      d            1.60 
+##  2 A      k            1.51 
+##  3 A      o            1.12 
+##  4 A      r            0.944
+##  5 A      u            0.919
+##  6 A      s            0.821
+##  7 A      v            0.782
+##  8 A      h            0.738
+##  9 A      y            0.620
+## 10 A      t            0.594
+## # ... with 20 more rows</code></pre>
+<p>Which works perfectly fine.</p>
+<p>Or, I could use nest</p>
+<pre class="r"><code>df %&gt;%
+  group_by(tissue) %&gt;%
+  nest() %&gt;%
+  mutate(data = map(data, get_top10)) %&gt;%
+  unnest()</code></pre>
+<pre><code>## # A tibble: 30 x 3
+##    tissue gene_id expression
+##    &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt;
+##  1 A      d            1.60 
+##  2 A      k            1.51 
+##  3 A      o            1.12 
+##  4 A      r            0.944
+##  5 A      u            0.919
+##  6 A      s            0.821
+##  7 A      v            0.782
+##  8 A      h            0.738
+##  9 A      y            0.620
+## 10 A      t            0.594
+## # ... with 20 more rows</code></pre>
+<p>The value of <code>nest()</code> over <code>split()</code> is that you can <code>group_by</code> multiple different columns at the same time and you don’t have to do that ugly <code>df$my_column</code> stuff.</p>

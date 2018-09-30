@@ -1,0 +1,132 @@
+---
+title: Matrix::Matrix
+author: Russ Hyde
+date: '2018-09-30'
+slug: matrix-matrix
+categories:
+  - R
+tags:
+  - rstats
+  - favouRiteThings
+lastmod: '2018-09-30T19:44:45+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+Originally posted 2018-05-04 to [
+  Blogger
+](
+  http://biolearnr.blogspot.com/2018/02/a-few-of-my-favourite-things.html
+).
+
+See [
+  here
+](
+  http://www.johnmyleswhite.com/notebook/2011/10/31/using-sparse-matrices-in-r/
+) and [
+  here
+](
+  https://cran.r-project.org/web/packages/Matrix/index.html
+) for some background on the `Matrix` package.
+
+`Matrix` provides sparse-matrix objects to `R`. So if you're making matrices that
+are mostly zero use `Matrix` not `matrix`.
+
+I recently used `Matrix` while trying to work out the overlap sizes between a
+few hundred different sets of genes. The genesets were represented as a list of
+vectors of gene-ids; each vector being a single geneset. My initial code
+`map`ped over the collection of genesets twice, to pull out each pair of
+genesets, and then compared the intersection sizes of the two genesets.
+
+THIS TOOK FOREVER!
+
+So, instead for the _G_ genes and the _S_ genesets, I made a sparse _G x S_
+binary matrix, where the `i,j`'th entry indicated whether gene `i` was present
+in geneset `j`. In graph theory language, this is a [
+  biadjacency matrix
+](
+  https://en.wikipedia.org/wiki/Adjacency_matrix#Of_a_bipartite_graph
+) over a [
+  bipartite graph
+](
+  https://en.wikipedia.org/wiki/Bipartite_graph
+), wherein the edges represent the presence of a gene in a geneset and there is
+a node for each gene and each geneset.
+
+Let `M` be that matrix. We can construct it as follows:
+
+```{r}
+make_biadjacency_from_list <- function(
+    genesets,
+    universe = NULL
+  ) {
+
+  if (is.null(universe)) {
+    universe <- genesets %>%
+      purrr::reduce(union) %>%
+      sort()
+    }
+
+  incidence <- Matrix::Matrix(
+    0,
+    nrow = length(universe),
+    ncol = length(genesets),
+    sparse = TRUE
+  ) %>%
+    magrittr::set_rownames(universe)
+
+  for (j in seq_along(genesets)) {
+    genes <- genesets[[j]]
+    rows <- which(universe %in% genes)
+    incidence[rows, j] <- 1
+  }
+  incidence
+}
+```
+
+```
+M <- make_biadjacency_from_list(my_gene_sets, my_gene_universe)
+```
+
+That runs in seconds. Then the geneset overlap sizes can be pulled out from
+`t(M) %*% M` since the `i,j` entry of this matrix is the number of genes
+present in both geneset `i` and geneset `j`.
+
+```{r}
+get_overlap_counts <- function(
+    biadj
+  ) {
+  # determine the overlap counts by taking the inner product
+  # - note that codegree is a Matrix provided `biadj` is one
+  codegree <- t(biadj) %*% biadj
+
+  # the diagonal elements define the number of genes in each
+  # geneset
+  set_sizes <- diag(codegree)
+    
+  # identify indices for pairs of genesets with non-zero overlap,
+  # refer to them as set1 and set2
+  overlapping_sets <- 
+    which(as.matrix(codegree) != 0, arr.ind = TRUE) %>%
+    as_data_frame() %>%
+    set_colnames(c("set1", "set2")) %>%
+    filter(set1 != set2)
+
+  # add the geneset overlaps and the sizes of both set1 and set2
+  # - note the pattern for vectorised extraction from a Matrix
+  # - codegree[set1, set2] would return a subMatrix not a vector
+  overlapping_sets %>%
+    mutate(
+      set1_size = set_sizes[set1],
+      set2_size = set_sizes[set2],
+      set_overlap = codegree[cbind(set1, set2)]
+    ) %>%
+    mutate_all(as.integer)
+}
+```
+
+Then I ran my Fisher-tests using the geneset sizes and overlap sizes returned
+by `get_overlap_counts(M)`.
+
+Thank you, sparseness.
