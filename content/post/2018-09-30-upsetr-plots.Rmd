@@ -1,0 +1,109 @@
+---
+title: UpSetR charts
+author: Russ Hyde
+date: '2018-09-30'
+slug: upsetr-plots
+categories: []
+tags: []
+lastmod: '2018-09-30T16:05:30+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+Venn diagrams blow. 
+
+Multiset Venn diagrams both blow and suck:
+
+- Don't make them; and
+
+- Don't make me interpret them; and
+
+- Don't try and put them in your presentations because you'll get lost.
+
+`UpSetR` provides a way to do the multi-set comparison thing without looking horrific.
+
+We sample a few sets from the letters `b-z`:
+
+```{r}
+library("UpSetR")
+
+set.seed(1)
+
+bucket_names <- paste0("set", 1:6)
+
+buckets <- Map(
+  function(x){
+    bucket_size <- sample(1:25, 1)
+    bucket <- sample(letters[-1], bucket_size, replace = FALSE)
+    },
+  bucket_names
+  )
+```
+
+```{r}
+lapply(buckets, sort)
+```
+
+The function `upset` takes a data-frame as input. But I've just defined my sets
+as a list of vectors. To convert these into a data-frame, use
+`UpSetR::fromList`:
+
+```{r}
+fromList(buckets)
+```
+
+The letter 'a' is absent from every one of these sets. you could add a
+`universe` entry or an `unobserved` entry to the set-list passed to `fromList`
+if that's what you're into.
+
+Otherwise, to generate an upset plot do the following:
+
+```{r}
+upset(
+  fromList(buckets)
+  )
+```
+
+We note a couple of things: 
+
+- `set1` is absent from the image, although it contained 7 elements;
+
+- the elements of a given set are partitioned between the bars
+
+    - eg, `set3` contains 9 elements, that are split over the 4-5th, 8-9th and
+12-14th columns (the numbers above these columns add up to 9) so each element
+in set3 is put into a single column that means, although the intersection
+between set3 and set6 is of size 8, there is only one element in the "set3 and
+set6" intersection column (the remaining 6 are partitioned across the other
+columns that contain both set3 and set6).
+
+To ensure that all the sets are displayed in the figure, modify the `nsets`
+argument: You can order the bars by size (`order.by = "freq"`) or by the number
+of sets that contributed to the intersection (`order.by = "degree"`) or by
+both:
+
+```{r}
+# order by freq
+upset(
+  fromList(buckets), nsets = length(buckets), order.by = "freq"
+)
+```
+
+```{r}
+# order by degree and then by freq (not shown)
+upset(
+  fromList(buckets), order.by = c("freq", "degree"),
+  nsets = length(buckets)
+  )
+```
+
+```{r}
+# order by freq and then by degree
+upset(
+  fromList(buckets), order.by = c("degree", "freq"),
+  nsets = length(buckets)
+  )
+```
+
+I found the latter a bit weird, in that order.by = c("degree", "freq") sorts by increasing frequency, whereas order.by="freq" sorts by decreasing frequency.
