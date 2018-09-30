@@ -1,0 +1,118 @@
+---
+title: UpSetR charts
+author: Russ Hyde
+date: '2018-09-30'
+slug: upsetr-plots
+categories: []
+tags: []
+lastmod: '2018-09-30T16:05:30+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+
+
+<p>Venn diagrams blow.</p>
+<p>Multiset Venn diagrams both blow and suck:</p>
+<ul>
+<li><p>Don’t make them; and</p></li>
+<li><p>Don’t make me interpret them; and</p></li>
+<li><p>Don’t try and put them in your presentations because you’ll get lost.</p></li>
+</ul>
+<p><code>UpSetR</code> provides a way to do the multi-set comparison thing without looking horrific.</p>
+<p>We sample a few sets from the letters <code>b-z</code>:</p>
+<pre class="r"><code>library(&quot;UpSetR&quot;)
+
+set.seed(1)
+
+bucket_names &lt;- paste0(&quot;set&quot;, 1:6)
+
+buckets &lt;- Map(
+  function(x){
+    bucket_size &lt;- sample(1:25, 1)
+    bucket &lt;- sample(letters[-1], bucket_size, replace = FALSE)
+    },
+  bucket_names
+  )</code></pre>
+<pre class="r"><code>lapply(buckets, sort)</code></pre>
+<pre><code>## $set1
+## [1] &quot;f&quot; &quot;k&quot; &quot;n&quot; &quot;o&quot; &quot;t&quot; &quot;v&quot; &quot;x&quot;
+## 
+## $set2
+##  [1] &quot;c&quot; &quot;d&quot; &quot;f&quot; &quot;h&quot; &quot;i&quot; &quot;j&quot; &quot;k&quot; &quot;m&quot; &quot;n&quot; &quot;o&quot; &quot;q&quot; &quot;r&quot; &quot;s&quot; &quot;w&quot; &quot;y&quot; &quot;z&quot;
+## 
+## $set3
+##  [1] &quot;b&quot; &quot;e&quot; &quot;i&quot; &quot;k&quot; &quot;l&quot; &quot;m&quot; &quot;p&quot; &quot;v&quot; &quot;x&quot; &quot;y&quot;
+## 
+## $set4
+##  [1] &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;f&quot; &quot;g&quot; &quot;i&quot; &quot;k&quot; &quot;l&quot; &quot;n&quot; &quot;o&quot; &quot;p&quot; &quot;q&quot; &quot;s&quot; &quot;t&quot; &quot;u&quot; &quot;v&quot; &quot;w&quot;
+## [18] &quot;x&quot; &quot;y&quot; &quot;z&quot;
+## 
+## $set5
+##  [1] &quot;c&quot; &quot;f&quot; &quot;h&quot; &quot;j&quot; &quot;k&quot; &quot;n&quot; &quot;q&quot; &quot;r&quot; &quot;s&quot; &quot;t&quot; &quot;v&quot; &quot;w&quot; &quot;y&quot;
+## 
+## $set6
+##  [1] &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;e&quot; &quot;f&quot; &quot;g&quot; &quot;i&quot; &quot;j&quot; &quot;k&quot; &quot;l&quot; &quot;m&quot; &quot;n&quot; &quot;p&quot; &quot;q&quot; &quot;r&quot; &quot;s&quot; &quot;t&quot;
+## [18] &quot;u&quot; &quot;w&quot; &quot;x&quot; &quot;z&quot;</code></pre>
+<p>The function <code>upset</code> takes a data-frame as input. But I’ve just defined my sets as a list of vectors. To convert these into a data-frame, use <code>UpSetR::fromList</code>:</p>
+<pre class="r"><code>fromList(buckets)</code></pre>
+<pre><code>##    set1 set2 set3 set4 set5 set6
+## 1     1    1    1    1    1    1
+## 2     1    1    0    1    0    0
+## 3     1    0    1    1    1    0
+## 4     1    1    0    1    1    1
+## 5     1    0    0    1    1    1
+## 6     1    0    1    1    0    1
+## 7     1    1    0    1    1    1
+## 8     0    1    0    1    1    1
+## 9     0    1    1    1    1    0
+## 10    0    1    0    1    1    1
+## 11    0    1    0    0    1    1
+## 12    0    1    0    1    1    1
+## 13    0    1    0    0    1    1
+## 14    0    1    0    0    1    0
+## 15    0    1    1    0    0    1
+## 16    0    1    0    1    0    1
+## 17    0    1    1    1    0    1
+## 18    0    1    0    1    0    1
+## 19    0    1    0    1    1    1
+## 20    0    0    1    1    0    1
+## 21    0    0    1    1    0    1
+## 22    0    0    1    0    0    1
+## 23    0    0    1    1    0    1
+## 24    0    0    0    1    0    1
+## 25    0    0    0    1    0    1</code></pre>
+<p>The letter ‘a’ is absent from every one of these sets. you could add a <code>universe</code> entry or an <code>unobserved</code> entry to the set-list passed to <code>fromList</code> if that’s what you’re into.</p>
+<p>Otherwise, to generate an upset plot do the following:</p>
+<pre class="r"><code>upset(
+  fromList(buckets)
+  )</code></pre>
+<p><img src="/post/2018-09-30-upsetr-plots_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>We note a couple of things:</p>
+<ul>
+<li><p><code>set1</code> is absent from the image, although it contained 7 elements;</p></li>
+<li><p>the elements of a given set are partitioned between the bars</p>
+<ul>
+<li>eg, <code>set3</code> contains 9 elements, that are split over the 4-5th, 8-9th and 12-14th columns (the numbers above these columns add up to 9) so each element in set3 is put into a single column that means, although the intersection between set3 and set6 is of size 8, there is only one element in the “set3 and set6” intersection column (the remaining 6 are partitioned across the other columns that contain both set3 and set6).</li>
+</ul></li>
+</ul>
+<p>To ensure that all the sets are displayed in the figure, modify the <code>nsets</code> argument: You can order the bars by size (<code>order.by = &quot;freq&quot;</code>) or by the number of sets that contributed to the intersection (<code>order.by = &quot;degree&quot;</code>) or by both:</p>
+<pre class="r"><code># order by freq
+upset(
+  fromList(buckets), nsets = length(buckets), order.by = &quot;freq&quot;
+)</code></pre>
+<p><img src="/post/2018-09-30-upsetr-plots_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code># order by degree and then by freq (not shown)
+upset(
+  fromList(buckets), order.by = c(&quot;freq&quot;, &quot;degree&quot;),
+  nsets = length(buckets)
+  )</code></pre>
+<p><img src="/post/2018-09-30-upsetr-plots_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code># order by freq and then by degree
+upset(
+  fromList(buckets), order.by = c(&quot;degree&quot;, &quot;freq&quot;),
+  nsets = length(buckets)
+  )</code></pre>
+<p><img src="/post/2018-09-30-upsetr-plots_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>I found the latter a bit weird, in that order.by = c(“degree”, “freq”) sorts by increasing frequency, whereas order.by=“freq” sorts by decreasing frequency.</p>
