@@ -4,11 +4,11 @@ author: Russ Hyde
 date: '2018-09-30'
 slug: upsetr-plots
 categories: []
-tags: []
+tags: [dataviz, rstats]
 lastmod: '2018-09-30T16:05:30+01:00'
 layout: post
 type: post
-highlight: no
+highlight: true
 ---
 
 Venn diagrams blow. 
