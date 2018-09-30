@@ -1,0 +1,161 @@
+---
+title: Working Directories and RMarkdown
+author: Russ Hyde
+date: '2018-09-10'
+slug: working-directories-and-rmarkdown
+categories:
+  - R
+tags:
+  - R Markdown
+lastmod: '2018-09-10T10:29:23+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+
+
+<p><Migrated and modified from a 2017 post on Blogger></p>
+<p>Discussed elsewhere, I organise my bioinformatics projects like this:</p>
+<pre><code>./jobs/
+    - &lt;jobname&gt;/
+        - conf/
+        - data/
+        - doc/
+            - notebook.Rmd
+            - some_other_script.Rmd
+        - .here
+        - lib/
+        - results/
+        - requirements.txt
+        - scripts/
+        - subjobs/
+            - &lt;nested_structure&gt;
+        - Snakefile</code></pre>
+<p>Here, the top level <a href="https://snakemake.readthedocs.io/en/stable/">snakemake</a> script controls the running of all scripts and the compiling of all documents. My labbooks are stored as R-markdown documents and get compiled / knitted to <code>.pdf</code>s by the packages <code>rmarkdown</code> and <code>knitr</code>.</p>
+<p>When working on the project <code>&lt;jobname&gt;</code>, my working directory is <code>./jobs/&lt;jobname&gt;</code> and, in the simple case when a given project has no subjobs, this working directory shouldn’t be changed by any of the scripts or documents. <code>knitr</code>’s a bit of a bugger though. Unless you specifically tell it otherwise (eg, using the <code>root.dir</code> option of <code>opts_knit</code>), <code>knitr</code> will set the working directory to match the directory where your script is stored, rather than where you called it from (see below).</p>
+<p>To compile a single <code>*.Rmd</code> notebook, I have the following <code>snakemake</code> recipe. It converts <code>doc/some_file.Rmd</code> into <code>doc/some_file.pdf</code> or <code>doc/some_file.docx</code> depending on the required output filename<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>.</p>
+<pre><code>rule compile_markdown:
+    message:
+        &quot;&quot;&quot;
+        Compile R-markdown to .pdf or .docx in job `{params.job}`
+
+        - Use `*.Rmd` as first input argument and put any additional
+        dependencies into `rmarkdown_prereqs`
+        - The output `.pdf` or `.docx` is the first output argument, and any
+          additionally-constructed files should be implicitly named in
+          `rmarkdown_result_regexes`. Each entry in the latter should have a
+          {{doc_name}} and a {{ext}} wildcard in their definition.
+        &quot;&quot;&quot;
+
+    input:
+        [&quot;doc/{doc_name}.Rmd&quot;] + rmarkdown_prereqs
+
+    output:
+        [&quot;doc/{doc_name}.{ext,pdf|docx}&quot;] + rmarkdown_result_regexes
+
+    params:
+        job = os.path.basename(os.getcwd())
+
+    run:
+        R(&quot;&quot;&quot;
+            library(rmarkdown)
+            library(tools)
+            doctype &lt;- list(pdf  = &quot;pdf_document&quot;,
+                            docx = &quot;word_document&quot;
+                            )[[&quot;{wildcards.ext}&quot;]]
+            rmd.script &lt;- &quot;{input[0]}&quot;
+            render(rmd.script,
+                   output_format = doctype,
+                   output_file   = &quot;{output[0]}&quot;,
+                   output_dir    = &quot;doc&quot;,
+                   quiet = TRUE)
+        &quot;&quot;&quot;)</code></pre>
+<div id="what-does-knitr-do-to-the-working-directory" class="section level2">
+<h2>What does <code>knitr</code> do to the working directory?</h2>
+<p>Assume I’m sitting in the working directory “~/HERE” on the command line.</p>
+<p>Let’s write a simple R markdown script (<code>doc/temp.Rmd</code>) that just prints out the current working directory:</p>
+<!--
+    There doesn't seem to be a way to render to the website such that the text
+    looks like an Rmarkdown code-block
+-->
+<pre class="markdown"><code>---
+title: temp.Rmd
+author: Russ Hyde
+---
+
+ ```{r}
+# Print the current working directory
+print(getwd())
+```
+</code></pre>
+<p>… and then render that into a <code>.pdf</code>:</p>
+<pre><code>~/HERE&gt; Rscript -e &quot;library(rmarkdown); render(&#39;doc/temp.Rmd&#39;)&quot;</code></pre>
+<p>This prints out the working directory as <code>~/HERE/doc</code> (where the script is stored) rather than the directory <code>~/HERE</code>, where I called Rscript from.</p>
+<p>Note that if I put a similar <code>.R</code> script in <code>./doc</code>, that prints out the current working directory, this doesn’t happen. Running the following using <code>Rscript</code> prints out the user’s working directory (ie, <code>~/HERE</code>).</p>
+<pre><code># temp.R
+print(getwd())
+# end of temp.R</code></pre>
+</div>
+<div id="whats-wrong-with-monkeying-with-the-working-directory" class="section level2">
+<h2>What’s wrong with monkeying with the working directory?</h2>
+<p>There’s a few reasons that I don’t like the working directory being changed within a script. When you want to read some data from a file into a script that you’re running, you can either</p>
+<ul>
+<li><ol style="list-style-type: lower-roman">
+<li>write or compute the filepath for your data within the script; or</li>
+</ol></li>
+<li><ol start="2" style="list-style-type: lower-roman">
+<li>you can provide the script with the filepath as an argument (or in a config file).</li>
+</ol></li>
+</ul>
+<p>Let’s suppose you had two different scripts that access the same file, but where one of those scripts changes the working directory. Then:</p>
+<p>In case i: you’d have to write the filepath differently for the two scripts. Here, if I wanted to access <code>./data/my_counts.tsv</code> from within <code>./doc/temp.R</code> and <code>./doc/temp.Rmd</code>, I’d have to write the filepath as <code>./data/my_counts.tsv</code> within the former, and <code>../data/my_counts.tsv</code> within the latter.</p>
+<p>In case ii: you’d have to similarly mangle the filepaths. A script that changes the working directory should be provided filepaths relative to the working directory chosen by that script, so when you’re passing in file-paths you have to think as if you’re in that directory used by that script at the time the file is accessed (NO!!!!); or use absolute paths (NO!!!!!!).</p>
+<!--
+    Not sure about this argument
+    - knitr's modification of the wd is completely portable provided all the
+    rest of your project is portable
+    - it just means you have to write Rmarkdown scripts slightly differently
+    than R-scripts, and you can't really pass file arguments to Rmarkdown
+    anyway
+    - unless .. you are reading them into your Rmarkdown from a config file
+    in which case you have to hack the directory tree to match the Rmarkdown
+    file's relative position.
+    - or ... you want to get exactly the same results when you compile your
+    Rmarkdown using knitr to when you run it as a notebook in Rstudio from your
+    project's main directory
+-->
+<p>I know it seems trivial, and described as above it only seems like a mild inefficiency to have to write different scripts in slightly different ways. But if you get into the habit of using scripts that modify the working directory you limit the portability / reproducibility of your work.</p>
+<p>My old approach was to set <code>root.dir</code> in <code>opts_knit</code> during knitting the document. It was pretty scruffy but it worked and is described in an old version of this entry <a href="http://biolearnr.blogspot.com/2017/06/working-directory-in-r-markdown.html">at my old blog</a>.</p>
+</div>
+<div id="herehere" class="section level2">
+<h2>here::here()</h2>
+<p>There is another path however.</p>
+<p>Suppose you’re writing an Rmarkdown script <code>myproject/doc/notebook.Rmd</code>, and you want to read in some file <code>myproject/data/important-datas.tsv</code>.</p>
+<p>By the default knitr settings you’d read this file in relative to the Rmarkdown’s position:</p>
+<pre class="markdown"><code> ```{r}
+# no!
+my_data &lt;- read_tsv(&quot;../data/important-datas.tsv&quot;)
+```
+</code></pre>
+<p>That works, but suppose you move the Rmarkdown into <code>doc/initial_scripts/</code>. Any filepaths that were written relative to <code>doc/</code> are no longer valid - and your script will no longer knit.</p>
+<p>The alternative path is as follows:</p>
+<ul>
+<li><p>Install the CRAN package <a href="https://cran.r-project.org/web/packages/here/index.html"><code>here</code></a> - this allows you to write file-paths relative to a directory of your choosing;</p></li>
+<li><p>Stick an empty file called <code>.here</code> in the main directory of your project (this anchors your relative-paths);</p></li>
+<li><p>At the start of all of your Rmarkdown files load the <code>here</code> package using <code>library(here)</code></p></li>
+<li><p>Then specify all your file-paths relative to the project’s working directory using the <code>here</code> function, instead of relative to your Rmarkdown’s position.</p></li>
+</ul>
+<pre class="markdown"><code>
+ ```{r}
+library(here)
+my_data &lt;- read_tsv(here(&quot;data/important-datas.tsv&quot;))
+```
+</code></pre>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Using <code>R</code> within snakemake is frowned upon now, it’s better to use external scripts, so I’ll probably rewrite this rule soon. See <a href="https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#snakefiles-external-scripts">here</a>.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
