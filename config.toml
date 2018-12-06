@@ -10,6 +10,9 @@ theme = "hyde-hyde"
 # googleAnalytics = "your-google-analytics-id"
 # enableRobotsTXT = true
 
+## Ignore these:
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
 ## Site Settings
 [params]
     author = "Russ Hyde"

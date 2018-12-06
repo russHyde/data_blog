@@ -1,0 +1,94 @@
+---
+title: Data Analysis Project Architecture
+author: Russ Hyde
+date: '2018-12-06'
+slug: data-analysis-project-architecture
+categories: []
+tags:
+  - project structure
+  - rstats
+lastmod: '2018-12-06T14:30:56Z'
+layout: post
+type: post
+highlight: no
+---
+
+Data analysis projects need a slightly different structure from general 
+programming projects ^[based on an earlier 
+[blog](https://biolearnr.blogspot.com/2017/05/project-organisation.html) of 
+mine]. Their organisation should ensure they are
+
+- reproducible
+
+    - the project should be rerunnable and all results / reports generated
+    should be automatically produced
+
+    - running it on a different computer or in a different location should not
+    affect the results
+    
+- version-controlled
+    
+    - an explicit version of the source code, and any dependencies (eg,
+    external github repos, CRAN packages, command line tools) should be used
+
+- consistent
+
+    - the structure of one project should look like another
+    
+- quick
+
+    - initialising a new project should be quick
+    
+    - running a project should require only a few commands
+
+    - you shouldn't have to run the whole project whenever a small part of it
+    is changed
+    
+- nestable
+
+    - in a large project it may make sense to define subjobs within
+    subdirectories
+
+- modular
+
+    - a sensible way to share code / data between multiple projects
+
+- language / toolkit / hardware agnostic
+
+    - it should be possible to use python, bash, R, SQL etc all within one
+    project without having to monkey with the project structure too much
+
+- chop-and-changeable
+
+    - you like ruffus (github|hg|venv), I like snakemake (bitbucket|git|conda)
+    
+    - I once liked jupyter, I now like R-Markdown - this stuff shouldn't be
+    fixed at initialisation, a project should permit migration from one set-up
+    to another
+
+There are a few project-organisation tools out there but they're frequently
+tied to a single language or to a type of data-analysis that doesn't fit my
+(bioinformatics) everyday life.
+
+The life-cycle for a data analysis project is supposed to look something like
+this:
+
+- Question ->
+
+- Data acquisition / preparation ->
+
+- Exploration / Modelling ->
+
+- Communication ->
+
+- Further questions ...
+
+Some projects are more fruitful than others, and may mean that your approaches
+and tools need to be scaled up for use by other people or on other datasets.
+So, the life-cycle includes maintenance, implementation etc in some settings.
+
+What this life-cycle view doesn't show is that data, code and various other
+tools / knowledge developed during one project are frequently of use in
+parallel or subsequent projects. Really we've all got loads of life-cycles all
+turning at the same time and good (code-level) project management can help
+them all turn more frequently.
