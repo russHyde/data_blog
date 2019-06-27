@@ -1,0 +1,98 @@
+---
+title: Code Analysis in R
+author: Russ Hyde
+date: '2019-06-27'
+slug: code-analysis-in-r
+categories:
+  - R
+tags:
+  - coding
+  - rstats
+lastmod: '2019-06-27T16:41:20+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+
+
+<p><strong>You’ve been analysing data all day, now let’s analyse your code …</strong></p>
+<p>Within it’s programming toolkit, <em>R</em> has some really cool things for analysing
+code and for identifying / fixing issues in your code.</p>
+<p>What kinds of code-level stuff do these tools help you address?</p>
+<ul>
+<li><p>Dependencies between packages</p></li>
+<li><p>Dependencies between functions within a package</p></li>
+<li><p>Code <em>complexity</em></p></li>
+<li><p>Code formatting</p></li>
+<li><p>Test coverage</p></li>
+<li><p>Code performance</p></li>
+<li><p>Finding bugs</p></li>
+<li><p>Documentation</p></li>
+</ul>
+<p>Code analysis splits neatly into two camps,
+<a href="https://en.wikipedia.org/wiki/Dynamic_program_analysis">dynamic-</a> and
+<a href="https://en.wikipedia.org/wiki/Static_program_analysis">static-analysis</a>,
+loosely depending on whether your code is ran during the analysis. For example,
+you could determine whether all the variable names in a script conform to some
+style guide without having to run that script (static); but you’d need to run
+the script to work out which function calls have the largest appetite for
+processor time or memory (dynamic).</p>
+<p>Fundamentals:</p>
+<ul>
+<li><code>R CMD check</code></li>
+</ul>
+<p>Existing CRAN packages:</p>
+<ul>
+<li><p><code>lintr</code></p></li>
+<li><p><code>cyclocomp</code></p></li>
+<li><p><code>CodeDepends</code></p></li>
+<li><p><code>pkgnet</code></p></li>
+<li><p><code>covr</code></p></li>
+<li><p><code>microbenchmark</code></p></li>
+<li><p><code>profvis</code></p></li>
+<li><p><code>styler</code></p></li>
+<li><p><code>formatR</code></p></li>
+</ul>
+<p>Prospective packages:</p>
+<ul>
+<li><p><code>mutate</code> from rOpenSci</p></li>
+<li><p><code>dupree</code> from me</p></li>
+</ul>
+<p>Things that can be done in other languages that aren’t (yet? / to my knowledge)
+available or possible in R:</p>
+<ul>
+<li><p>type-checking</p></li>
+<li><p>unused code detection</p></li>
+<li><p>refactoring recommendations (? this is done by goodpractice)</p></li>
+<li><p>security problems</p></li>
+</ul>
+<p>But there’s no real substitute for getting a human to code-review your stuff,
+because there isn’t any automated way to address the most important thing:</p>
+<ul>
+<li>code readability</li>
+</ul>
+<div id="resources" class="section level2">
+<h2>Resources</h2>
+<p>Maelle Salmon from rOpenSci has a nice
+<a href="https://masalmon.eu/2017/12/11/goodrpackages/">blog post</a> that covers some
+tools that help during package development.</p>
+<p>For more on “code smells” see Martin Fowler’s “Refactoring”, Robert C. Martin’s
+“Clean Code” or Jenny Bryan’s
+<a href="https://github.com/jennybc/code-smells-and-feels#readme">useR!2018 talk</a>.</p>
+</div>
+<div id="heading-2" class="section level2">
+<h2>Heading 2</h2>
+<p>Sollicitudin ornare odio blandit aenean enim lacus accumsan elementum
+vestibulum porta mauris lorem, ullamcorper class fermentum sem hendrerit ante
+augue penatibus scelerisque felis leo proin,ad nascetur venenatis sodales
+dignissim viverra suspendisse turpis convallis condimentum sapien.</p>
+<div id="heading-3" class="section level3">
+<h3>Heading 3</h3>
+<p>At quisque litora ullamcorper maecenas ultricies ut dignissim luctus curabitur,
+cras congue eget primis aliquam fringilla nulla dictum posuere, vestibulum sit
+magnis nisl praesent eros ipsum nunc. Ligula lacus ipsum orci aenean integer
+pharetra habitasse interdum, porttitor etiam hac feugiat placerat morbi posuere
+turpis leo, quam at amet gravida commodo fringilla erat.</p>
+</div>
+</div>
