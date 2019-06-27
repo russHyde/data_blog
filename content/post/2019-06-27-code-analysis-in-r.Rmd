@@ -1,0 +1,118 @@
+---
+title: Code Analysis in R
+author: Russ Hyde
+date: '2019-06-27'
+slug: code-analysis-in-r
+categories:
+  - R
+tags:
+  - coding
+  - rstats
+lastmod: '2019-06-27T16:41:20+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+**You've been analysing data all day, now let's analyse your code ...**
+
+Within it's programming toolkit, _R_ has some really cool things for analysing
+code and for identifying / fixing issues in your code.
+
+What kinds of code-level stuff do these tools help you address?
+
+- Dependencies between packages
+
+- Dependencies between functions within a package
+
+- Code _complexity_
+
+- Code formatting
+
+- Test coverage
+
+- Code performance
+
+- Finding bugs
+
+- Documentation
+
+Code analysis splits neatly into two camps,
+[dynamic-](https://en.wikipedia.org/wiki/Dynamic_program_analysis) and
+[static-analysis](https://en.wikipedia.org/wiki/Static_program_analysis),
+loosely depending on whether your code is ran during the analysis. For example,
+you could determine whether all the variable names in a script conform to some
+style guide without having to run that script (static); but you'd need to run
+the script to work out which function calls have the largest appetite for
+processor time or memory (dynamic).
+
+Fundamentals:
+
+- `R CMD check`
+
+Existing CRAN packages:
+
+- `lintr`
+
+- `cyclocomp`
+
+- `CodeDepends`
+
+- `pkgnet`
+
+- `covr`
+
+- `microbenchmark`
+
+- `profvis`
+
+- `styler`
+
+- `formatR`
+
+Prospective packages:
+
+- `mutate` from rOpenSci
+
+- `dupree` from me
+
+Things that can be done in other languages that aren't (yet? / to my knowledge)
+available or possible in R:
+
+- type-checking
+
+- unused code detection
+
+- refactoring recommendations (? this is done by goodpractice)
+
+- security problems
+
+But there's no real substitute for getting a human to code-review your stuff,
+because there isn't any automated way to address the most important thing:
+
+- code readability
+
+## Resources
+
+Maelle Salmon from rOpenSci has a nice
+[blog post](https://masalmon.eu/2017/12/11/goodrpackages/) that covers some
+tools that help during package development.
+
+For more on "code smells" see Martin Fowler's "Refactoring", Robert C. Martin's
+"Clean Code" or Jenny Bryan's
+[useR!2018 talk](https://github.com/jennybc/code-smells-and-feels#readme).
+
+## Heading 2
+
+Sollicitudin ornare odio blandit aenean enim lacus accumsan elementum
+vestibulum porta mauris lorem, ullamcorper class fermentum sem hendrerit ante
+augue penatibus scelerisque felis leo proin,ad nascetur venenatis sodales
+dignissim viverra suspendisse turpis convallis condimentum sapien.
+
+### Heading 3
+
+At quisque litora ullamcorper maecenas ultricies ut dignissim luctus curabitur,
+cras congue eget primis aliquam fringilla nulla dictum posuere, vestibulum sit
+magnis nisl praesent eros ipsum nunc. Ligula lacus ipsum orci aenean integer
+pharetra habitasse interdum, porttitor etiam hac feugiat placerat morbi posuere
+turpis leo, quam at amet gravida commodo fringilla erat.
