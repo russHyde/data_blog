@@ -19,23 +19,38 @@ highlight: no
 Within it's programming toolkit, _R_ has some really cool things for analysing
 code and for identifying / fixing issues in your code.
 
-What kinds of code-level stuff do these tools help you address?
+What kinds of code-level stuff do these tools make you aware of?
 
-- Dependencies between packages
+- Dependencies
 
-- Dependencies between functions within a package
+    - between packages (`pkgnet`)
 
-- Code _complexity_
+    - between functions within a package or script (`pkgnet` / `CodeDepends`)
 
-- Code formatting
+- Complexity
 
-- Test coverage
+    - `cyclocomp`
 
-- Code performance
+- Style
 
-- Finding bugs
+    - Code formatting (`lintr` / `styler` / `formatR`)
 
-- Documentation
+    - Alternative (safer / more idiomatic) language constructs
+
+- Test quality
+
+    - Are all your functions tested? (`covr`)
+    
+    - Are your tests good enough? (See `mutate` / `hedgehog`)
+
+- Performance
+
+    - `microbenchmark`, `profvis` etc
+
+- Documentation / Installability / Loadability
+
+    - `R CMD check` / `goodpractice` (TLDR: for packages at least, running
+    `R CMD check` and `goodpractice` should be essential)
 
 Code analysis splits neatly into two camps,
 [dynamic-](https://en.wikipedia.org/wiki/Dynamic_program_analysis) and
@@ -46,29 +61,10 @@ style guide without having to run that script (static); but you'd need to run
 the script to work out which function calls have the largest appetite for
 processor time or memory (dynamic).
 
-Fundamentals:
+Here, I'm more interested in code correctness, design and style than speed or
+RAM usage.
 
-- `R CMD check`
-
-Existing CRAN packages:
-
-- `lintr`
-
-- `cyclocomp`
-
-- `CodeDepends`
-
-- `pkgnet`
-
-- `covr`
-
-- `microbenchmark`
-
-- `profvis`
-
-- `styler`
-
-- `formatR`
+## Notes
 
 Prospective packages:
 
@@ -93,6 +89,11 @@ because there isn't any automated way to address the most important thing:
 - code readability
 
 ## Resources
+
+"Nice R Code" has a
+[blog post](https://nicercode.github.io/blog/2013-05-07-how-long-is-a-function/)
+on function lengths in R packages and also a post about why nice code is
+[something to strive for](https://nicercode.github.io/blog/2013-04-05-why-nice-code/)
 
 Maelle Salmon from rOpenSci has a nice
 [blog post](https://masalmon.eu/2017/12/11/goodrpackages/) that covers some

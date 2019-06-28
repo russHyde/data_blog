@@ -19,16 +19,36 @@ highlight: no
 <p><strong>You’ve been analysing data all day, now let’s analyse your code …</strong></p>
 <p>Within it’s programming toolkit, <em>R</em> has some really cool things for analysing
 code and for identifying / fixing issues in your code.</p>
-<p>What kinds of code-level stuff do these tools help you address?</p>
+<p>What kinds of code-level stuff do these tools make you aware of?</p>
 <ul>
-<li><p>Dependencies between packages</p></li>
-<li><p>Dependencies between functions within a package</p></li>
-<li><p>Code <em>complexity</em></p></li>
-<li><p>Code formatting</p></li>
-<li><p>Test coverage</p></li>
-<li><p>Code performance</p></li>
-<li><p>Finding bugs</p></li>
-<li><p>Documentation</p></li>
+<li><p>Dependencies</p>
+<ul>
+<li><p>between packages (<code>pkgnet</code>)</p></li>
+<li><p>between functions within a package or script (<code>pkgnet</code> / <code>CodeDepends</code>)</p></li>
+</ul></li>
+<li><p>Complexity</p>
+<ul>
+<li><code>cyclocomp</code></li>
+</ul></li>
+<li><p>Style</p>
+<ul>
+<li><p>Code formatting (<code>lintr</code> / <code>styler</code> / <code>formatR</code>)</p></li>
+<li><p>Alternative (safer / more idiomatic) language constructs</p></li>
+</ul></li>
+<li><p>Test quality</p>
+<ul>
+<li><p>Are all your functions tested? (<code>covr</code>)</p></li>
+<li><p>Are your tests good enough? (See <code>mutate</code> / <code>hedgehog</code>)</p></li>
+</ul></li>
+<li><p>Performance</p>
+<ul>
+<li><code>microbenchmark</code>, <code>profvis</code> etc</li>
+</ul></li>
+<li><p>Documentation / Installability / Loadability</p>
+<ul>
+<li><code>R CMD check</code> / <code>goodpractice</code> (TLDR: for packages at least, running
+<code>R CMD check</code> and <code>goodpractice</code> should be essential)</li>
+</ul></li>
 </ul>
 <p>Code analysis splits neatly into two camps,
 <a href="https://en.wikipedia.org/wiki/Dynamic_program_analysis">dynamic-</a> and
@@ -38,22 +58,10 @@ you could determine whether all the variable names in a script conform to some
 style guide without having to run that script (static); but you’d need to run
 the script to work out which function calls have the largest appetite for
 processor time or memory (dynamic).</p>
-<p>Fundamentals:</p>
-<ul>
-<li><code>R CMD check</code></li>
-</ul>
-<p>Existing CRAN packages:</p>
-<ul>
-<li><p><code>lintr</code></p></li>
-<li><p><code>cyclocomp</code></p></li>
-<li><p><code>CodeDepends</code></p></li>
-<li><p><code>pkgnet</code></p></li>
-<li><p><code>covr</code></p></li>
-<li><p><code>microbenchmark</code></p></li>
-<li><p><code>profvis</code></p></li>
-<li><p><code>styler</code></p></li>
-<li><p><code>formatR</code></p></li>
-</ul>
+<p>Here, I’m more interested in code correctness, design and style than speed or
+RAM usage.</p>
+<div id="notes" class="section level2">
+<h2>Notes</h2>
 <p>Prospective packages:</p>
 <ul>
 <li><p><code>mutate</code> from rOpenSci</p></li>
@@ -72,8 +80,13 @@ because there isn’t any automated way to address the most important thing:</p>
 <ul>
 <li>code readability</li>
 </ul>
+</div>
 <div id="resources" class="section level2">
 <h2>Resources</h2>
+<p>“Nice R Code” has a
+<a href="https://nicercode.github.io/blog/2013-05-07-how-long-is-a-function/">blog post</a>
+on function lengths in R packages and also a post about why nice code is
+<a href="https://nicercode.github.io/blog/2013-04-05-why-nice-code/">something to strive for</a></p>
 <p>Maelle Salmon from rOpenSci has a nice
 <a href="https://masalmon.eu/2017/12/11/goodrpackages/">blog post</a> that covers some
 tools that help during package development.</p>
