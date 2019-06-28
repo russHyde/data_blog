@@ -28,12 +28,15 @@ code and for identifying / fixing issues in your code.</p>
 </ul></li>
 <li><p>Complexity</p>
 <ul>
-<li><code>cyclocomp</code></li>
+<li><p>Labyrinthine functions (<code>cyclocomp</code>)</p></li>
+<li><p>Function length etc</p></li>
 </ul></li>
 <li><p>Style</p>
 <ul>
 <li><p>Code formatting (<code>lintr</code> / <code>styler</code> / <code>formatR</code>)</p></li>
-<li><p>Alternative (safer / more idiomatic) language constructs</p></li>
+<li><p>Refactorings: alternative (eg, safer / more idiomatic) language
+constructs with similar behaviour (<code>goodpractice</code> does a bit of this; but
+<em>R</em> doesn’t have much refactoring support)</p></li>
 </ul></li>
 <li><p>Test quality</p>
 <ul>
@@ -46,7 +49,7 @@ code and for identifying / fixing issues in your code.</p>
 </ul></li>
 <li><p>Documentation / Installability / Loadability</p>
 <ul>
-<li><code>R CMD check</code> / <code>goodpractice</code> (TLDR: for packages at least, running
+<li><code>R CMD check</code> / <code>goodpractice</code> (for packages at least, running
 <code>R CMD check</code> and <code>goodpractice</code> should be essential)</li>
 </ul></li>
 </ul>
@@ -93,4 +96,75 @@ tools that help during package development.</p>
 <p>For more on “code smells” see Martin Fowler’s “Refactoring”, Robert C. Martin’s
 “Clean Code” or Jenny Bryan’s
 <a href="https://github.com/jennybc/code-smells-and-feels#readme">useR!2018 talk</a>.</p>
+<p>Some code smells that are particularly relevant here pave the many rings of
+<a href="https://www.burns-stat.com/pages/Tutor/R_inferno.pdf">the <em>R</em> inferno</a></p>
+<p>There’s a list of the different aspects of software architecture
+<a href="https://medium.com/@nvashanin/quality-attributes-in-software-architecture-3844ea482732">here</a></p>
+<!--
+
+## Code smells
+
+[As named in _Refactoring_] if relevant to data analysis or _R_ packages
+
+- Naming
+
+    - Mysterious name
+
+- Comments
+
+- Code structure
+
+    - Duplicated code
+
+    - Repeated switches
+
+    - Loops
+
+    - Temporary field
+
+- Functions
+
+    - Long function
+
+    - Long parameter list
+
+    - Speculative generality
+
+- Data and variables
+
+    - Global data
+
+    - Mutable data
+
+    - Data clumps
+
+    - Primitive obsession
+
+    - Data class
+
+- Coupling / cohesion and other dependencies
+
+    - Feature envy
+
+    - Message chains
+
+    - Middle man
+
+- Revealed during modification / generalisation
+
+    - Divergent change
+
+    - Shotgun surgery
+
+???
+- Lazy element
+
+- Insider trading
+
+- Large class
+
+- Alternative classes with different interfaces
+
+- Refused bequest
+-->
 </div>
