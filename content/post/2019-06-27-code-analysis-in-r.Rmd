@@ -19,7 +19,9 @@ highlight: no
 Within it's programming toolkit, _R_ has some really cool things for analysing
 code and for identifying / fixing issues in your code.
 
-What kinds of code-level stuff do these tools make you aware of?
+What kinds of code-level stuff (eg, software-design/architectural properties,
+code smells) might you want to be aware of when developing packages or writing
+analysis scripts? And what tools are available to do this?
 
 - Dependencies
 
@@ -31,7 +33,7 @@ What kinds of code-level stuff do these tools make you aware of?
 
     - Labyrinthine functions (`cyclocomp`)
 
-    - Function length etc
+    - Elongated functions
 
 - Style
 
@@ -68,10 +70,33 @@ style guide without having to run that script (static); but you'd need to run
 a script to work out which function calls have the largest appetite for
 processor time or memory (dynamic).
 
+In the following posts, I'm going to explain how to use these tools (and a
+couple of tools that are less well developed) on your analysis scripts or
+packages.
 
+In the face of these automatic code-analysis tools, it's important to remember
+that there's no real substitute for getting a human to code-review your stuff,
+because there isn't any automated way to address the most important thing: code
+readability.
 
+<!--
+  For each of the tools, describe
+  - The package & author
+  - Any existing blog posts or vignettes that describe how to use it
+  - The architectural property or code smell that the package can help you
+  quantify or address and why addressing _that_ matters
+  - A brief example of how to use it, either:
+    - against a script
+    - against a package
+    - against a set of packages
+  - Does the tool
+    - directly modify your source code?
+    - run your source code?
+    - require tests to be in place before running?
+  
+-->
 
-
+<!--
 
 ## Notes
 
@@ -95,10 +120,8 @@ available or possible in R:
 
 - security problems
 
-But there's no real substitute for getting a human to code-review your stuff,
-because there isn't any automated way to address the most important thing:
-
-- code readability
+But 
+--> 
 
 ## Resources
 

@@ -19,7 +19,9 @@ highlight: no
 <p><strong>You’ve been analysing data all day, now let’s analyse your code …</strong></p>
 <p>Within it’s programming toolkit, <em>R</em> has some really cool things for analysing
 code and for identifying / fixing issues in your code.</p>
-<p>What kinds of code-level stuff do these tools make you aware of?</p>
+<p>What kinds of code-level stuff (eg, software-design/architectural properties,
+code smells) might you want to be aware of when developing packages or writing
+analysis scripts? And what tools are available to do this?</p>
 <ul>
 <li><p>Dependencies</p>
 <ul>
@@ -29,7 +31,7 @@ code and for identifying / fixing issues in your code.</p>
 <li><p>Complexity</p>
 <ul>
 <li><p>Labyrinthine functions (<code>cyclocomp</code>)</p></li>
-<li><p>Function length etc</p></li>
+<li><p>Elongated functions</p></li>
 </ul></li>
 <li><p>Style</p>
 <ul>
@@ -63,29 +65,55 @@ you could determine whether all the variable names in a script conform to some
 style guide without having to run that script (static); but you’d need to run
 a script to work out which function calls have the largest appetite for
 processor time or memory (dynamic).</p>
-<div id="notes" class="section level2">
-<h2>Notes</h2>
-<p>Here, I’m more interested in code correctness, design and style than speed or
-RAM usage.</p>
-<p>Prospective packages:</p>
-<ul>
-<li><p><code>mutate</code> from rOpenSci</p></li>
-<li><p><code>dupree</code> from me</p></li>
-</ul>
-<p>Things that can be done in other languages that aren’t (yet? / to my knowledge)
-available or possible in R:</p>
-<ul>
-<li><p>type-checking</p></li>
-<li><p>unused code detection</p></li>
-<li><p>refactoring recommendations (? this is done by goodpractice)</p></li>
-<li><p>security problems</p></li>
-</ul>
-<p>But there’s no real substitute for getting a human to code-review your stuff,
-because there isn’t any automated way to address the most important thing:</p>
-<ul>
-<li>code readability</li>
-</ul>
-</div>
+<p>In the following posts, I’m going to explain how to use these tools (and a
+couple of tools that are less well developed) on your analysis scripts or
+packages.</p>
+<p>In the face of these automatic code-analysis tools, it’s important to remember
+that there’s no real substitute for getting a human to code-review your stuff,
+because there isn’t any automated way to address the most important thing: code
+readability.</p>
+<!--
+  For each of the tools, describe
+  - The package & author
+  - Any existing blog posts or vignettes that describe how to use it
+  - The architectural property or code smell that the package can help you
+  quantify or address and why addressing _that_ matters
+  - A brief example of how to use it, either:
+    - against a script
+    - against a package
+    - against a set of packages
+  - Does the tool
+    - directly modify your source code?
+    - run your source code?
+    - require tests to be in place before running?
+  
+-->
+<!--
+
+## Notes
+
+Here, I'm more interested in code correctness, design and style than speed or
+RAM usage.
+
+Prospective packages:
+
+- `mutate` from rOpenSci
+
+- `dupree` from me
+
+Things that can be done in other languages that aren't (yet? / to my knowledge)
+available or possible in R:
+
+- type-checking
+
+- unused code detection
+
+- refactoring recommendations (? this is done by goodpractice)
+
+- security problems
+
+But 
+-->
 <div id="resources" class="section level2">
 <h2>Resources</h2>
 <p>“Nice R Code” has a
