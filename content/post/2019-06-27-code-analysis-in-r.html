@@ -53,18 +53,20 @@ constructs with similar behaviour (<code>goodpractice</code> does a bit of this;
 <code>R CMD check</code> and <code>goodpractice</code> should be essential)</li>
 </ul></li>
 </ul>
+<p>… and being aware of these things can help you restructure your code, so that
+it’s more easily used, maintained and extended.</p>
 <p>Code analysis splits neatly into two camps,
 <a href="https://en.wikipedia.org/wiki/Dynamic_program_analysis">dynamic-</a> and
 <a href="https://en.wikipedia.org/wiki/Static_program_analysis">static-analysis</a>,
 loosely depending on whether your code is ran during the analysis. For example,
 you could determine whether all the variable names in a script conform to some
 style guide without having to run that script (static); but you’d need to run
-the script to work out which function calls have the largest appetite for
+a script to work out which function calls have the largest appetite for
 processor time or memory (dynamic).</p>
-<p>Here, I’m more interested in code correctness, design and style than speed or
-RAM usage.</p>
 <div id="notes" class="section level2">
 <h2>Notes</h2>
+<p>Here, I’m more interested in code correctness, design and style than speed or
+RAM usage.</p>
 <p>Prospective packages:</p>
 <ul>
 <li><p><code>mutate</code> from rOpenSci</p></li>

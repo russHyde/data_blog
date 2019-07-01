@@ -56,21 +56,27 @@ What kinds of code-level stuff do these tools make you aware of?
     - `R CMD check` / `goodpractice` (for packages at least, running
     `R CMD check` and `goodpractice` should be essential)
 
+... and being aware of these things can help you restructure your code, so that
+it's more easily used, maintained and extended.
+
 Code analysis splits neatly into two camps,
 [dynamic-](https://en.wikipedia.org/wiki/Dynamic_program_analysis) and
 [static-analysis](https://en.wikipedia.org/wiki/Static_program_analysis),
 loosely depending on whether your code is ran during the analysis. For example,
 you could determine whether all the variable names in a script conform to some
 style guide without having to run that script (static); but you'd need to run
-the script to work out which function calls have the largest appetite for
+a script to work out which function calls have the largest appetite for
 processor time or memory (dynamic).
 
-Here, I'm more interested in code correctness, design and style than speed or
-RAM usage.
+
+
 
 
 
 ## Notes
+
+Here, I'm more interested in code correctness, design and style than speed or
+RAM usage.
 
 Prospective packages:
 
