@@ -21,25 +21,35 @@ highlight: no
 helps ensure your source code looks pretty consistent across your package(s).</p>
 <p>Why is that useful?</p>
 <p>It might not be. I couldn’t find many objective studies of code readability
-amongst the thousands of opinion pieces that are online, so I
-can’t tell you whether consistent styling is all <em>that</em> valuable (there’s
-thousands of opinion pieces though …). Hell, writing R code may dull your
-consistency desires: in a typical script I might have a
-<code>suppressPackageStartupMessages</code>, a <code>file.exists()</code>, a <code>read_tsv()</code>, and a
-<code>Heatmap()</code> all present. It might be nice if things were less surprising.</p>
+amongst the thousands of opinion pieces that are online, so I can’t tell you
+whether consistent styling is all <em>that</em> valuable (there’s thousands of opinion
+pieces though …). Hell, writing R code may dull your consistency desires: in
+a typical script I might have a <code>suppressPackageStartupMessages</code>, a
+<code>file.exists()</code>, a <code>read_tsv()</code>, and a <code>Heatmap()</code> all present. It might be
+nice if things were less surprising, and it always feels nicer to contribute to
+projects that are neatly formatted.</p>
 <p>But this is your project we’re talking about. If you like your lines to be
 at-most 100 characters wide, get in early and specify that the lines must be
 at-most 100 characters wide. Similarly, if you like your object names to be
 <code>snake_case</code>, write up a <code>.lintr</code> file that ensures any contributors have to
 follow in your wake.</p>
+<p><code>lintr</code> can be used on individual files, directories or packages.</p>
 <!--
+Simple example:
 
+- New project
+- add `my_script.R`
+- define a few functions, trailing curly braces and absolute paths as examples
+- since absolute paths is not a default linter in lintr::1.0.3, add this to
+  the default_linters
+- show how to drop lines from linting using `# nolint start` / `# nolint end`
+- show how to define a linter
+-->
+<!--
 Code smells that can be detected with `lintr`
 
 - Commented-out code
-
 - Inconsistency
-
 - Clutter / Dead Code (via codetools::checkUsage())
 
 But it can't prevent you choosing mysterious names
@@ -48,7 +58,6 @@ Architectural properties that `lintr` shines a light on:
 
 - readability
     - keep those lines narrow
-    - 
 
 - security
     - catch unsafe extractions with `extraction_operator_linter`
@@ -56,5 +65,4 @@ Architectural properties that `lintr` shines a light on:
 
 - deployability / usability
     - catch any non-portable paths using `absolute_path_linter` / `nonportable_path_linter`
-
 -->
