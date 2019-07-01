@@ -1,0 +1,60 @@
+---
+title: "`lintr`"
+author: Russ Hyde
+date: '2019-07-01'
+slug: lintr
+categories:
+  - R
+tags:
+  - code-analysis
+  - rstats
+lastmod: '2019-07-01T18:25:47+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+
+
+<p><strong>Lint is the fluff on your clothes. Aside from all that fluff, you look fine.</strong></p>
+<p><code>lintr</code> compares the code in your files / packages against a style-guide. This
+helps ensure your source code looks pretty consistent across your package(s).</p>
+<p>Why is that useful?</p>
+<p>It might not be. I couldn’t find many objective studies of code readability
+amongst the thousands of opinion pieces that are online, so I
+can’t tell you whether consistent styling is all <em>that</em> valuable (there’s
+thousands of opinion pieces though …). Hell, writing R code may dull your
+consistency desires: in a typical script I might have a
+<code>suppressPackageStartupMessages</code>, a <code>file.exists()</code>, a <code>read_tsv()</code>, and a
+<code>Heatmap()</code> all present. It might be nice if things were less surprising.</p>
+<p>But this is your project we’re talking about. If you like your lines to be
+at-most 100 characters wide, get in early and specify that the lines must be
+at-most 100 characters wide. Similarly, if you like your object names to be
+<code>snake_case</code>, write up a <code>.lintr</code> file that ensures any contributors have to
+follow in your wake.</p>
+<!--
+
+Code smells that can be detected with `lintr`
+
+- Commented-out code
+
+- Inconsistency
+
+- Clutter / Dead Code (via codetools::checkUsage())
+
+But it can't prevent you choosing mysterious names
+
+Architectural properties that `lintr` shines a light on:
+
+- readability
+    - keep those lines narrow
+    - 
+
+- security
+    - catch unsafe extractions with `extraction_operator_linter`
+    - prevent use of undesirable functions/operators/symbols
+
+- deployability / usability
+    - catch any non-portable paths using `absolute_path_linter` / `nonportable_path_linter`
+
+-->
