@@ -8,6 +8,7 @@ categories:
 tags:
   - coding
   - rstats
+  - code-analysis
 lastmod: '2019-06-27T16:41:20+01:00'
 layout: post
 type: post
@@ -27,7 +28,7 @@ analysis scripts? And what tools are available to do this?
 
     - between packages (`pkgnet`)
 
-    - between functions within a package or script (`pkgnet` / `CodeDepends`)
+    - between functions within a package or script (`pkgnet` / `CodeDepends`, / `codetools`)
 
 - Complexity
 
@@ -128,7 +129,10 @@ But
 "Nice R Code" has a
 [blog post](https://nicercode.github.io/blog/2013-05-07-how-long-is-a-function/)
 on function lengths in R packages and also a post about why nice code is
-[something to strive for](https://nicercode.github.io/blog/2013-04-05-why-nice-code/)
+[something to strive for](https://nicercode.github.io/blog/2013-04-05-why-nice-code/).
+
+The Software Sustainability Institute also has a webpage about source code
+[readability](https://software.ac.uk/resources/guides/writing-readable-source-code).
 
 Maelle Salmon from rOpenSci has a nice
 [blog post](https://masalmon.eu/2017/12/11/goodrpackages/) that covers some
@@ -139,10 +143,10 @@ For more on "code smells" see Martin Fowler's "Refactoring", Robert C. Martin's
 [useR!2018 talk](https://github.com/jennybc/code-smells-and-feels#readme).
 
 Some code smells that are particularly relevant here pave the many rings of 
-[the _R_ inferno](https://www.burns-stat.com/pages/Tutor/R_inferno.pdf)
+[the _R_ inferno](https://www.burns-stat.com/pages/Tutor/R_inferno.pdf).
 
 There's a list of the different aspects of software architecture
-[here](https://medium.com/@nvashanin/quality-attributes-in-software-architecture-3844ea482732)
+[here](https://medium.com/@nvashanin/quality-attributes-in-software-architecture-3844ea482732).
 
 <!--
 
