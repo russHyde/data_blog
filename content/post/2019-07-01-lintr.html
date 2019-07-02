@@ -17,23 +17,33 @@ highlight: no
 
 
 <p><strong>Lint is the fluff on your clothes. Aside from all that fluff, you look fine.</strong></p>
-<p><code>lintr</code> compares the code in your files / packages against a style-guide. This
-helps ensure your source code looks pretty consistent across your package(s).</p>
+<p><a href="https://github.com/jimhester/lintr"><code>lintr</code></a> (Author: Jim Hester) compares the
+code in your files / packages against a style-guide. This helps ensure your
+source code looks pretty consistent across your package(s).</p>
 <p>Why is that useful?</p>
 <p>It might not be. I couldn’t find many objective studies of code readability
 amongst the thousands of opinion pieces that are online, so I can’t tell you
-whether consistent styling is all <em>that</em> valuable (there’s thousands of opinion
-pieces though …). Hell, writing R code may dull your consistency desires: in
-a typical script I might have a <code>suppressPackageStartupMessages</code>, a
-<code>file.exists()</code>, a <code>read_tsv()</code>, and a <code>Heatmap()</code> all present. It might be
-nice if things were less surprising, and it always feels nicer to contribute to
-projects that are neatly formatted.</p>
+whether consistent styling is all <em>that</em> valuable. Hell, writing R code may
+dull your consistency desires: in a typical script I might have a
+<code>suppressPackageStartupMessages</code>, a <code>file.exists()</code>, a <code>read_tsv()</code>, and a
+<code>Heatmap()</code> all present. It might be nice if things were less surprising, and
+it always feels nicer to contribute to projects that are neatly formatted.</p>
 <p>But this is your project we’re talking about. If you like your lines to be
 at-most 100 characters wide, get in early and specify that the lines must be
 at-most 100 characters wide. Similarly, if you like your object names to be
 <code>snake_case</code>, write up a <code>.lintr</code> file that ensures any contributors have to
 follow in your wake.</p>
-<p><code>lintr</code> can be used on individual files, directories or packages.</p>
+<p><code>lintr</code> can be used on individual files (<code>.R</code>, <code>.Rmd</code>, <code>.Rnw</code> etc), directories
+or packages. <em>Rstudio</em>, <em>vim</em>, <em>atom</em> etc can be integrated with <code>lintr</code> (see
+the details at the <code>lintr</code> <a href="https://github.com/jimhester/lintr">github page</a>).
+For example, through integration with <em>syntastic</em>, <em>vim</em> can run <code>lintr</code>
+whenever you save a file, and if you run <code>lintr</code> within <em>Rstudio</em>, any lints
+that are identified are put into the <code>Markers</code> pane.</p>
+<!--
+abc = 123
+def <- 456;
+x <- function(){T}
+-->
 <!--
 Simple example:
 

@@ -16,19 +16,19 @@ highlight: no
 
 **Lint is the fluff on your clothes. Aside from all that fluff, you look fine.**
 
-`lintr` compares the code in your files / packages against a style-guide. This
-helps ensure your source code looks pretty consistent across your package(s).
+[`lintr`](https://github.com/jimhester/lintr) (Author: Jim Hester) compares the
+code in your files / packages against a style-guide. This helps ensure your
+source code looks pretty consistent across your package(s).
 
 Why is that useful?
 
 It might not be. I couldn't find many objective studies of code readability
 amongst the thousands of opinion pieces that are online, so I can't tell you
-whether consistent styling is all _that_ valuable (there's thousands of opinion
-pieces though ...). Hell, writing R code may dull your consistency desires: in
-a typical script I might have a `suppressPackageStartupMessages`, a
-`file.exists()`, a `read_tsv()`, and a `Heatmap()` all present. It might be
-nice if things were less surprising, and it always feels nicer to contribute to
-projects that are neatly formatted.
+whether consistent styling is all _that_ valuable. Hell, writing R code may
+dull your consistency desires: in a typical script I might have a
+`suppressPackageStartupMessages`, a `file.exists()`, a `read_tsv()`, and a
+`Heatmap()` all present. It might be nice if things were less surprising, and
+it always feels nicer to contribute to projects that are neatly formatted.
 
 But this is your project we're talking about. If you like your lines to be
 at-most 100 characters wide, get in early and specify that the lines must be
@@ -36,7 +36,18 @@ at-most 100 characters wide. Similarly, if you like your object names to be
 `snake_case`, write up a `.lintr` file that ensures any contributors have to
 follow in your wake.
 
-`lintr` can be used on individual files, directories or packages.
+`lintr` can be used on individual files (`.R`, `.Rmd`, `.Rnw` etc), directories
+or packages. _Rstudio_, _vim_, _atom_ etc can be integrated with `lintr` (see
+the details at the `lintr` [github page](https://github.com/jimhester/lintr)).
+For example, through integration with _syntastic_, _vim_ can run `lintr`
+whenever you save a file, and if you run `lintr` within _Rstudio_, any lints
+that are identified are put into the `Markers` pane.
+
+<!--
+abc = 123
+def <- 456;
+x <- function(){T}
+-->
 
 <!--
 Simple example:
