@@ -39,11 +39,57 @@ the details at the <code>lintr</code> <a href="https://github.com/jimhester/lint
 For example, through integration with <em>syntastic</em>, <em>vim</em> can run <code>lintr</code>
 whenever you save a file, and if you run <code>lintr</code> within <em>Rstudio</em>, any lints
 that are identified are put into the <code>Markers</code> pane.</p>
-<!--
-abc = 123
-def <- 456;
-x <- function(){T}
--->
+<p>To run <code>lintr</code> call:</p>
+<pre><code>lintr::lint(some_file)</code></pre>
+<p>Some example code, stored in a temporary file that we can refer to using <code>f</code></p>
+<pre class="r"><code># -- My important script
+abc &lt;- 123
+
+def = 456
+
+c(0);
+
+# some unparseable code:
+FALSE &lt;- TRUE
+
+# some &lt;- &quot;commented code&quot;
+
+ghi = 789
+
+my_unportable_file &lt;- &quot;~/hello/world&quot;
+
+snakeCase &lt;- runif(10)
+
+dotty.variable.name &lt;- Sys.time()
+
+my_s3_class.print &lt;- print
+
+# Right assignment isn&#39;t caught yet
+&quot;A most perilous&quot; -&gt; assignment</code></pre>
+<p>We can now run <code>lintr</code> on that script, with the default choice of linting
+functions, and view the style-issues that are returned.</p>
+<pre class="r"><code>lintr::lint(filename = f)</code></pre>
+<pre><code>/tmp/RtmpMNb3Xg/713e7159312e.R:4:5: style: Use &lt;-, not =, for assignment.
+def = 456
+    ^
+/tmp/RtmpMNb3Xg/713e7159312e.R:11:3: style: Commented code should be removed.
+# some &lt;- &quot;commented code&quot;
+  ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/RtmpMNb3Xg/713e7159312e.R:13:5: style: Use &lt;-, not =, for assignment.
+ghi = 789
+    ^
+/tmp/RtmpMNb3Xg/713e7159312e.R:15:24: warning: Do not use absolute paths.
+my_unportable_file &lt;- &quot;~/hello/world&quot;
+                       ^~~~~~~~~~~~~
+/tmp/RtmpMNb3Xg/713e7159312e.R:17:1: style: Variable and function names should be all lowercase.
+snakeCase &lt;- runif(10)
+^~~~~~~~~
+/tmp/RtmpMNb3Xg/713e7159312e.R:19:1: style: Words within variable and function names should be separated by &#39;_&#39; rather than &#39;.&#39;.
+dotty.variable.name &lt;- Sys.time()
+^~~~~~~~~~~~~~~~~~~</code></pre>
+<pre class="r"><code># FYI:
+installed.packages()[&quot;lintr&quot;, &quot;Version&quot;]</code></pre>
+<pre><code>## [1] &quot;1.0.3&quot;</code></pre>
 <!--
 Simple example:
 

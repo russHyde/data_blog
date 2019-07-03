@@ -43,11 +43,59 @@ For example, through integration with _syntastic_, _vim_ can run `lintr`
 whenever you save a file, and if you run `lintr` within _Rstudio_, any lints
 that are identified are put into the `Markers` pane.
 
-<!--
-abc = 123
-def <- 456;
-x <- function(){T}
--->
+To run `lintr` call:
+
+```
+lintr::lint(some_file)
+```
+
+```{r, echo = FALSE}
+code <- "# -- My important script
+abc <- 123
+
+def = 456
+
+c(0);
+
+# some unparseable code:
+FALSE <- TRUE
+
+# some <- \"commented code\"
+
+ghi = 789
+
+my_unportable_file <- \"~/hello/world\"
+
+snakeCase <- runif(10)
+
+dotty.variable.name <- Sys.time()
+
+my_s3_class.print <- print
+
+# Right assignment isn't caught yet
+\"A most perilous\" -> assignment
+"
+
+f <- tempfile(pattern = "", fileext = ".R")
+cat(code, file = f)
+```
+
+Some example code, stored in a temporary file that we can refer to using `f`
+
+```{r, code = readLines(f), eval = FALSE}
+```
+
+We can now run `lintr` on that script, with the default choice of linting
+functions, and view the style-issues that are returned.
+
+```{r, comment = ""}
+lintr::lint(filename = f)
+```
+
+```{r}
+# FYI:
+installed.packages()["lintr", "Version"]
+```
 
 <!--
 Simple example:
