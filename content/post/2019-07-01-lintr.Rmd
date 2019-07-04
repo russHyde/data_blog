@@ -25,9 +25,17 @@ Why is that useful?
 It might not be. I couldn't find many objective studies of code readability
 amongst the thousands of opinion pieces that are online, so I can't tell you
 whether consistent styling is all _that_ valuable. Hell, writing R code may
-dull your consistency desires: in a typical script I might have a
-`suppressPackageStartupMessages()`, a `file.exists()`, a `read_tsv()`, and a
-`Heatmap()` all present. It might be nice if names were less surprising (in _R_
+dull your consistency desires: in a typical script I might have
+
+- a `suppressPackageStartupMessages()` (`camelCase`);
+
+- a `file.exists()` (`lower.dot.separated`);
+
+- a `read_tsv()` (`snake_case`);
+
+- and a `Heatmap()` (`UpperCamelCase` / `PascalCase`)
+
+all present. It might be nice if names were less surprising (in _R_
 generally), and it always feels nicer to contribute to projects that are neatly
 formatted.
 
@@ -157,6 +165,61 @@ lintr::lint(
     line_length_linter = lintr::line_length_linter(length = 36),
     object_length_linter = lintr::object_length_linter(length = 16)
   )
+)
+```
+
+When working in an _R_ project or package, you can define a `.lintr`
+configuration file that specifies which linters you want to apply to your
+code. These files use a related syntax to `lintr::lint`, but you specify the
+arguments in "key: value" format. My config for linting `dupree` looks like
+this (note how the `value` is an R expression; there's a more detailed
+example on the lintr github page).
+
+```
+linters: with_defaults(
+  commented_code_linter = NULL,
+  line_length_linter(80),
+  object_length_linter(40),
+  open_curly_linter = NULL,
+  spaces_left_parentheses_linter = NULL
+  )
+```
+
+You can implement new linters if you want. This is a bit more complex than
+simply using `lintr` in your projects. There's a write-up
+[here](https://cran.r-project.org/web/packages/lintr/vignettes/creating_linters.html).
+
+In the temp script we wrote above, the use of the right-assignment operator
+`->` wasn't caught. But, _surely it's hideous?_ We can modify the code of
+`assignment_linter` to catch right-assignment (I've also had to explicitly call
+some lintr internal functions but we'll gloss over that):
+
+```{r}
+right_assignment_linter <- function(source_file) {
+  lapply(
+    # ids_with_token finds any right-assignments in the file `->`
+    lintr:::ids_with_token(source_file, "RIGHT_ASSIGN"), function(id) {
+      parsed <- lintr:::with_id(source_file, id)
+      # The `Lint` function flags up any miscreant lines
+      lintr:::Lint(
+        filename = source_file$filename, line_number = parsed$line1,
+        column_number = parsed$col1, type = "style",
+        message = "Use <-, not ->, for assignment.",
+        line = source_file$lines[as.character(parsed$line1)],
+        linter = "right_assignment_linter"
+      )
+    }
+  )
+}
+```
+
+Running `lint` with our newly defined linter catches that filthy
+right-assignment.
+
+```{r}
+lintr::lint(
+  f,
+  linters = list(right_assignment_linter = right_assignment_linter)
 )
 ```
 

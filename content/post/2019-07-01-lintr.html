@@ -24,9 +24,14 @@ source code looks pretty consistent across your package(s).</p>
 <p>It might not be. I couldn’t find many objective studies of code readability
 amongst the thousands of opinion pieces that are online, so I can’t tell you
 whether consistent styling is all <em>that</em> valuable. Hell, writing R code may
-dull your consistency desires: in a typical script I might have a
-<code>suppressPackageStartupMessages()</code>, a <code>file.exists()</code>, a <code>read_tsv()</code>, and a
-<code>Heatmap()</code> all present. It might be nice if names were less surprising (in <em>R</em>
+dull your consistency desires: in a typical script I might have</p>
+<ul>
+<li><p>a <code>suppressPackageStartupMessages()</code> (<code>camelCase</code>);</p></li>
+<li><p>a <code>file.exists()</code> (<code>lower.dot.separated</code>);</p></li>
+<li><p>a <code>read_tsv()</code> (<code>snake_case</code>);</p></li>
+<li><p>and a <code>Heatmap()</code> (<code>UpperCamelCase</code> / <code>PascalCase</code>)</p></li>
+</ul>
+<p>all present. It might be nice if names were less surprising (in <em>R</em>
 generally), and it always feels nicer to contribute to projects that are neatly
 formatted.</p>
 <p>But this is your project we’re talking about. If you like your lines to be
@@ -82,22 +87,22 @@ MyClassName &lt;- function() {
 <p>We can now run <code>lintr</code> on that script, with the default choice of linting
 functions, and view the style-issues that are returned.</p>
 <pre class="r"><code>lintr::lint(filename = f)</code></pre>
-<pre><code>/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:4:5: style: Use &lt;-, not =, for assignment.
+<pre><code>/tmp/RtmprnDZzY/189631cf5f2a.R:4:5: style: Use &lt;-, not =, for assignment.
 def = 456
     ^
-/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:11:3: style: Commented code should be removed.
+/tmp/RtmprnDZzY/189631cf5f2a.R:11:3: style: Commented code should be removed.
 # some &lt;- &quot;commented code&quot;
   ^~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:13:5: style: Use &lt;-, not =, for assignment.
+/tmp/RtmprnDZzY/189631cf5f2a.R:13:5: style: Use &lt;-, not =, for assignment.
 ghi = 789
     ^
-/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:15:24: warning: Do not use absolute paths.
+/tmp/RtmprnDZzY/189631cf5f2a.R:15:24: warning: Do not use absolute paths.
 my_unportable_file &lt;- &quot;~/hello/world&quot;
                        ^~~~~~~~~~~~~
-/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:17:1: style: Variable and function names should be all lowercase.
+/tmp/RtmprnDZzY/189631cf5f2a.R:17:1: style: Variable and function names should be all lowercase.
 snakeCase &lt;- runif(10)
 ^~~~~~~~~
-/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:19:1: style: Words within variable and function names should be separated by &#39;_&#39; rather than &#39;.&#39;.
+/tmp/RtmprnDZzY/189631cf5f2a.R:19:1: style: Words within variable and function names should be separated by &#39;_&#39; rather than &#39;.&#39;.
 dotty.variable.name &lt;- Sys.time()
 ^~~~~~~~~~~~~~~~~~~</code></pre>
 <p>So we’ve caught style issues (choice of assignment operator, commented code,
@@ -148,21 +153,66 @@ object-length linters, and leave all other default linters untouched (eg
     object_length_linter = lintr::object_length_linter(length = 16)
   )
 )</code></pre>
-<pre><code>## /tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:15:1: style: lines should not be more than 36 characters.
+<pre><code>## /tmp/RtmprnDZzY/189631cf5f2a.R:15:1: style: lines should not be more than 36 characters.
 ## my_unportable_file &lt;- &quot;~/hello/world&quot;
 ## ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## /tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:15:1: style: Variable and function names should not be longer than 16 characters.
+## /tmp/RtmprnDZzY/189631cf5f2a.R:15:1: style: Variable and function names should not be longer than 16 characters.
 ## my_unportable_file &lt;- &quot;~/hello/world&quot;
 ## ^~~~~~~~~~~~~~~~~~
-## /tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:15:24: warning: Do not use absolute paths.
+## /tmp/RtmprnDZzY/189631cf5f2a.R:15:24: warning: Do not use absolute paths.
 ## my_unportable_file &lt;- &quot;~/hello/world&quot;
 ##                        ^~~~~~~~~~~~~
-## /tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:19:1: style: Variable and function names should not be longer than 16 characters.
+## /tmp/RtmprnDZzY/189631cf5f2a.R:19:1: style: Variable and function names should not be longer than 16 characters.
 ## dotty.variable.name &lt;- Sys.time()
 ## ^~~~~~~~~~~~~~~~~~~
-## /tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:21:1: style: Variable and function names should not be longer than 16 characters.
+## /tmp/RtmprnDZzY/189631cf5f2a.R:21:1: style: Variable and function names should not be longer than 16 characters.
 ## my_s3_class.print &lt;- print
 ## ^~~~~~~~~~~~~~~~~</code></pre>
+<p>When working in an <em>R</em> project or package, you can define a <code>.lintr</code>
+configuration file that specifies which linters you want to apply to your
+code. These files use a related syntax to <code>lintr::lint</code>, but you specify the
+arguments in “key: value” format. My config for linting <code>dupree</code> looks like
+this (note how the <code>value</code> is an R expression; there’s a more detailed
+example on the lintr github page).</p>
+<pre><code>linters: with_defaults(
+  commented_code_linter = NULL,
+  line_length_linter(80),
+  object_length_linter(40),
+  open_curly_linter = NULL,
+  spaces_left_parentheses_linter = NULL
+  )</code></pre>
+<p>You can implement new linters if you want. This is a bit more complex than
+simply using <code>lintr</code> in your projects. There’s a write-up
+<a href="https://cran.r-project.org/web/packages/lintr/vignettes/creating_linters.html">here</a>.</p>
+<p>In the temp script we wrote above, the use of the right-assignment operator
+<code>-&gt;</code> wasn’t caught. But, <em>surely it’s hideous?</em> We can modify the code of
+<code>assignment_linter</code> to catch right-assignment (I’ve also had to explicitly call
+some lintr internal functions but we’ll gloss over that):</p>
+<pre class="r"><code>right_assignment_linter &lt;- function(source_file) {
+  lapply(
+    # ids_with_token finds any right-assignments in the file `-&gt;`
+    lintr:::ids_with_token(source_file, &quot;RIGHT_ASSIGN&quot;), function(id) {
+      parsed &lt;- lintr:::with_id(source_file, id)
+      # The `Lint` function flags up any miscreant lines
+      lintr:::Lint(
+        filename = source_file$filename, line_number = parsed$line1,
+        column_number = parsed$col1, type = &quot;style&quot;,
+        message = &quot;Use &lt;-, not -&gt;, for assignment.&quot;,
+        line = source_file$lines[as.character(parsed$line1)],
+        linter = &quot;right_assignment_linter&quot;
+      )
+    }
+  )
+}</code></pre>
+<p>Running <code>lint</code> with our newly defined linter catches that filthy
+right-assignment.</p>
+<pre class="r"><code>lintr::lint(
+  f,
+  linters = list(right_assignment_linter = right_assignment_linter)
+)</code></pre>
+<pre><code>## /tmp/RtmprnDZzY/189631cf5f2a.R:35:19: style: Use &lt;-, not -&gt;, for assignment.
+## &quot;A most perilous&quot; -&gt; assignment
+##                   ^</code></pre>
 <!--
 - show how to define a linter
     - eg, convert assignment linter to also catch right-assignment linter
