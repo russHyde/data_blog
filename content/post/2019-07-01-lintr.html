@@ -25,9 +25,10 @@ source code looks pretty consistent across your package(s).</p>
 amongst the thousands of opinion pieces that are online, so I can’t tell you
 whether consistent styling is all <em>that</em> valuable. Hell, writing R code may
 dull your consistency desires: in a typical script I might have a
-<code>suppressPackageStartupMessages</code>, a <code>file.exists()</code>, a <code>read_tsv()</code>, and a
-<code>Heatmap()</code> all present. It might be nice if things were less surprising, and
-it always feels nicer to contribute to projects that are neatly formatted.</p>
+<code>suppressPackageStartupMessages()</code>, a <code>file.exists()</code>, a <code>read_tsv()</code>, and a
+<code>Heatmap()</code> all present. It might be nice if names were less surprising (in <em>R</em>
+generally), and it always feels nicer to contribute to projects that are neatly
+formatted.</p>
 <p>But this is your project we’re talking about. If you like your lines to be
 at-most 100 characters wide, get in early and specify that the lines must be
 at-most 100 characters wide. Similarly, if you like your object names to be
@@ -41,7 +42,8 @@ whenever you save a file, and if you run <code>lintr</code> within <em>Rstudio</
 that are identified are put into the <code>Markers</code> pane.</p>
 <p>To run <code>lintr</code> call:</p>
 <pre><code>lintr::lint(some_file)</code></pre>
-<p>Some example code, stored in a temporary file that we can refer to using <code>f</code></p>
+<p>As an example, some code has been added to a temporary file. The file, <code>f</code>,
+looks like this:</p>
 <pre class="r"><code># -- My important script
 abc &lt;- 123
 
@@ -64,42 +66,107 @@ dotty.variable.name &lt;- Sys.time()
 
 my_s3_class.print &lt;- print
 
+# - `lintr` defaults will disallow CamelCase and single-quotes
+# but we can wrap code in `# nolint start` / `# nolint end` to bypass
+
+# nolint start
+MyClassName &lt;- function() {
+  my_df &lt;- data.frame()
+  class(my_df) &lt;- &#39;MyClassName&#39;
+  my_df
+}
+# nolint end
+
 # Right assignment isn&#39;t caught yet
 &quot;A most perilous&quot; -&gt; assignment</code></pre>
 <p>We can now run <code>lintr</code> on that script, with the default choice of linting
 functions, and view the style-issues that are returned.</p>
 <pre class="r"><code>lintr::lint(filename = f)</code></pre>
-<pre><code>/tmp/RtmpMNb3Xg/713e7159312e.R:4:5: style: Use &lt;-, not =, for assignment.
+<pre><code>/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:4:5: style: Use &lt;-, not =, for assignment.
 def = 456
     ^
-/tmp/RtmpMNb3Xg/713e7159312e.R:11:3: style: Commented code should be removed.
+/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:11:3: style: Commented code should be removed.
 # some &lt;- &quot;commented code&quot;
   ^~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/RtmpMNb3Xg/713e7159312e.R:13:5: style: Use &lt;-, not =, for assignment.
+/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:13:5: style: Use &lt;-, not =, for assignment.
 ghi = 789
     ^
-/tmp/RtmpMNb3Xg/713e7159312e.R:15:24: warning: Do not use absolute paths.
+/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:15:24: warning: Do not use absolute paths.
 my_unportable_file &lt;- &quot;~/hello/world&quot;
                        ^~~~~~~~~~~~~
-/tmp/RtmpMNb3Xg/713e7159312e.R:17:1: style: Variable and function names should be all lowercase.
+/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:17:1: style: Variable and function names should be all lowercase.
 snakeCase &lt;- runif(10)
 ^~~~~~~~~
-/tmp/RtmpMNb3Xg/713e7159312e.R:19:1: style: Words within variable and function names should be separated by &#39;_&#39; rather than &#39;.&#39;.
+/tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:19:1: style: Words within variable and function names should be separated by &#39;_&#39; rather than &#39;.&#39;.
 dotty.variable.name &lt;- Sys.time()
 ^~~~~~~~~~~~~~~~~~~</code></pre>
-<pre class="r"><code># FYI:
-installed.packages()[&quot;lintr&quot;, &quot;Version&quot;]</code></pre>
-<pre><code>## [1] &quot;1.0.3&quot;</code></pre>
+<p>So we’ve caught style issues (choice of assignment operator, commented code,
+use of something other than <code>snake_case</code> etc) and some warnings ()</p>
+<p>The default linters are as follows:</p>
+<pre class="r"><code>names(lintr::default_linters)</code></pre>
+<pre><code>##  [1] &quot;assignment_linter&quot;              &quot;single_quotes_linter&quot;          
+##  [3] &quot;absolute_paths_linter&quot;          &quot;no_tab_linter&quot;                 
+##  [5] &quot;line_length_linter&quot;             &quot;commas_linter&quot;                 
+##  [7] &quot;infix_spaces_linter&quot;            &quot;spaces_left_parentheses_linter&quot;
+##  [9] &quot;spaces_inside_linter&quot;           &quot;open_curly_linter&quot;             
+## [11] &quot;closed_curly_linter&quot;            &quot;camel_case_linter&quot;             
+## [13] &quot;multiple_dots_linter&quot;           &quot;object_length_linter&quot;          
+## [15] &quot;object_usage_linter&quot;            &quot;trailing_whitespace_linter&quot;    
+## [17] &quot;trailing_blank_lines_linter&quot;    &quot;commented_code_linter&quot;</code></pre>
+<p>Note that we are using a <code>lintr</code> version from <code>CRAN</code> (version
+1.0.3
+).</p>
+<p>The github development version has more linters, can deal with a wider
+variety of document-types, and has better integration with <em>Rstudio</em> (eg, an
+Addin).</p>
+<p>Also, there are linters beyond those in the defaults (more so in the
+development version). And you can write your own linters. To use just these
+linters, add them to a named list and pass them in as the <code>linters</code> argument
+to <code>lint</code>.</p>
+<pre class="r"><code># Not real code
+lintr::lint(
+  f,
+  linters = list(some_linter = some_linting_function)
+)</code></pre>
+<p>To add extra linters to, or the modify the linters in the default linters,
+you can use <code>with_defaults()</code> and pass that as the <code>linters</code> argument. If you
+want to turn-off one of the default linters, give that linter a NULL value in
+the call to <code>with_defaults</code>.</p>
+<p>Here we turn off a few of the default linters, modify the line-length and
+object-length linters, and leave all other default linters untouched (eg
+<code>absolute_paths_linter</code> still catches)</p>
+<pre class="r"><code>lintr::lint(
+  filename = f,
+  linters = lintr::with_defaults(
+    # turn off a few linters
+    assignment_linter = NULL,
+    camel_case_linter = NULL,
+    multiple_dots_linter = NULL,
+    commented_code_linter = NULL,
+    # make the line-length linter more restrictive
+    line_length_linter = lintr::line_length_linter(length = 36),
+    object_length_linter = lintr::object_length_linter(length = 16)
+  )
+)</code></pre>
+<pre><code>## /tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:15:1: style: lines should not be more than 36 characters.
+## my_unportable_file &lt;- &quot;~/hello/world&quot;
+## ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## /tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:15:1: style: Variable and function names should not be longer than 16 characters.
+## my_unportable_file &lt;- &quot;~/hello/world&quot;
+## ^~~~~~~~~~~~~~~~~~
+## /tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:15:24: warning: Do not use absolute paths.
+## my_unportable_file &lt;- &quot;~/hello/world&quot;
+##                        ^~~~~~~~~~~~~
+## /tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:19:1: style: Variable and function names should not be longer than 16 characters.
+## dotty.variable.name &lt;- Sys.time()
+## ^~~~~~~~~~~~~~~~~~~
+## /tmp/Rtmp3ZGQVh/4c2f4ef6a6c2.R:21:1: style: Variable and function names should not be longer than 16 characters.
+## my_s3_class.print &lt;- print
+## ^~~~~~~~~~~~~~~~~</code></pre>
 <!--
-Simple example:
-
-- New project
-- add `my_script.R`
-- define a few functions, trailing curly braces and absolute paths as examples
-- since absolute paths is not a default linter in lintr::1.0.3, add this to
-  the default_linters
-- show how to drop lines from linting using `# nolint start` / `# nolint end`
 - show how to define a linter
+    - eg, convert assignment linter to also catch right-assignment linter
+- show how to modify project-wide
 -->
 <!--
 Code smells that can be detected with `lintr`
