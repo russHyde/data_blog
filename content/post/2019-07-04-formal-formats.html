@@ -1,0 +1,107 @@
+---
+title: "R-function Pokemon"
+author: Russ Hyde
+date: '2019-07-04'
+slug: formal-formats
+categories:
+  - R
+tags:
+  - rstats
+lastmod: '2019-07-04T17:42:12+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+
+
+<p><strong>R-Function Pokemon and the Informal Formats of Formals</strong></p>
+<p>When writing <em>R</em>, I tend to use <code>snake_case</code> for object names. The bioconductor
+project tends to use <code>camelCase</code> (<code>limma::makeContrasts</code>, <code>biomaRt::useMart</code>)
+and a lot of base functions use <code>dotted.case</code>.</p>
+<p>There are functions in <em>R</em> that use a few different formats for the function
+and argument names. For example,</p>
+<ul>
+<li><p><code>scan</code> has both dotted and camelCase parameters (<code>na.strings</code>,
+<code>allowEscapes</code>),</p></li>
+<li><p><code>sapply</code> has ALLUPPERCASE, DOTTED.UPPER.CASE and alllowercase parameters
+(<code>FUN</code>, <code>USE.NAMES</code>, <code>simplify</code>).</p></li>
+</ul>
+<p>Makes you wonder a few things:</p>
+<ul>
+<li><p>which function has the greatest diversity of parameter-name formats;</p></li>
+<li><p>which function has the most parameters;</p></li>
+<li><p>whither consistency?</p></li>
+</ul>
+<p>The dev version of <code>lintr</code> has regexes for identifying some of the more common
+formats (it uses <code>rex</code> to build regexes). I’ve modified these a bit so that
+they’re more strict</p>
+<pre class="r"><code>library(rex)
+
+# swiped from `lintr` and modified a bit to reduce overlaps between the styles:
+loweralnum &lt;- rex(one_of(lower, digit))
+upperalnum &lt;- rex(one_of(upper, digit))
+
+style_regexes &lt;- list(
+  &quot;UpperCamelCase&quot; = rex(start, upper, zero_or_more(alnum), lower, upper, zero_or_more(alnum), end),
+  &quot;lowerCamelCase&quot; = rex(start, lower, zero_or_more(alnum), lower, upper, zero_or_more(alnum), end),
+  &quot;snake_case&quot; = rex(start, one_or_more(loweralnum), one_or_more(&quot;_&quot;, one_or_more(loweralnum)), end),
+  &quot;dotted.case&quot; = rex(start, one_or_more(loweralnum), one_or_more(dot, one_or_more(loweralnum)), end),
+  &quot;alllowercase&quot; = rex(start, one_or_more(loweralnum), end),
+  &quot;ALLUPPERCASE&quot; = rex(start, one_or_more(upperalnum), end)
+)</code></pre>
+<p>Can any function in base-R catch all these stylistic Pokemon?</p>
+<p>How are we going to count the number of styles present for a single
+function?</p>
+<pre class="r"><code># Which of the coding-name-styles are matched by the parameters
+# of a given function?
+matches &lt;- function(fun) {
+  params &lt;- names(formals(fun))
+  sapply(style_regexes, function(regex){
+    any(rex::re_matches(params, regex))
+    })
+}</code></pre>
+<p>How are we going to get the names of all the functions in my attached packages?</p>
+<pre class="r"><code># https://stackoverflow.com/questions/20535247/seeking-functions-in-a-package
+
+# lsf.str(&quot;package:&lt;pkg_name&gt;&quot;) can be used to get all function names from the
+# package `pkg_name` (this must have been loaded into R first)
+
+# all the attached packages
+packages &lt;- c(
+  sessionInfo()$basePkgs,
+  names(sessionInfo()$otherPkgs)
+)
+
+# all the functions within those packages:
+function_names &lt;- unlist(
+  Map(
+    function(pkg) {
+      lsf.str(paste0(&quot;package:&quot;, pkg))
+    },
+    packages
+  )
+)
+
+names(function_names) &lt;- NULL</code></pre>
+<p>That gives us 2294 functions to consider.</p>
+<p>Which formats (columns) are present for each function (row)?</p>
+<pre class="r"><code>formats_by_function &lt;- t(sapply(function_names, matches))</code></pre>
+<p>Which function has caught the most formats?</p>
+<pre class="r"><code>fun &lt;- rownames(formats_by_function)[which.max(rowSums(formats_by_function))]
+
+t(formats_by_function[fun, , drop = FALSE])</code></pre>
+<pre><code>##                fisher.test
+## UpperCamelCase       FALSE
+## lowerCamelCase        TRUE
+## snake_case           FALSE
+## dotted.case           TRUE
+## alllowercase          TRUE
+## ALLUPPERCASE          TRUE</code></pre>
+<pre class="r"><code>args(fun)</code></pre>
+<pre><code>function (x, y = NULL, workspace = 2e+05, hybrid = FALSE, hybridPars = c(expect = 5, 
+    percent = 80, Emin = 1), control = list(), or = 1, alternative = &quot;two.sided&quot;, 
+    conf.int = TRUE, conf.level = 0.95, simulate.p.value = FALSE, 
+    B = 2000) 
+NULL</code></pre>
+<p>Well done Fisher, but you didn’t catch them all!</p>

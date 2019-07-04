@@ -1,0 +1,123 @@
+---
+title: "R-function Pokemon"
+author: Russ Hyde
+date: '2019-07-04'
+slug: formal-formats
+categories:
+  - R
+tags:
+  - rstats
+lastmod: '2019-07-04T17:42:12+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+**R-Function Pokemon and the Informal Formats of Formals**
+
+When writing _R_, I tend to use `snake_case` for object names. The bioconductor
+project tends to use `camelCase` (`limma::makeContrasts`, `biomaRt::useMart`)
+and a lot of base functions use `dotted.case`.
+
+There are functions in _R_ that use a few different formats for the function
+and argument names. For example,
+
+- `scan` has both dotted and camelCase parameters (`na.strings`,
+`allowEscapes`),
+
+- `sapply` has ALLUPPERCASE, DOTTED.UPPER.CASE and alllowercase parameters
+(`FUN`, `USE.NAMES`, `simplify`).
+
+Makes you wonder a few things:
+
+- which function has the greatest diversity of parameter-name formats;
+
+- which function has the most parameters;
+
+- whither consistency?
+
+The dev version of `lintr` has regexes for identifying some of the more common
+formats (it uses `rex` to build regexes). I've modified these a bit so that
+they're more strict
+
+```{r}
+library(rex)
+
+# swiped from `lintr` and modified a bit to reduce overlaps between the styles:
+loweralnum <- rex(one_of(lower, digit))
+upperalnum <- rex(one_of(upper, digit))
+
+style_regexes <- list(
+  "UpperCamelCase" = rex(start, upper, zero_or_more(alnum), lower, upper, zero_or_more(alnum), end),
+  "lowerCamelCase" = rex(start, lower, zero_or_more(alnum), lower, upper, zero_or_more(alnum), end),
+  "snake_case" = rex(start, one_or_more(loweralnum), one_or_more("_", one_or_more(loweralnum)), end),
+  "dotted.case" = rex(start, one_or_more(loweralnum), one_or_more(dot, one_or_more(loweralnum)), end),
+  "alllowercase" = rex(start, one_or_more(loweralnum), end),
+  "ALLUPPERCASE" = rex(start, one_or_more(upperalnum), end)
+)
+```
+
+Can any function in base-R catch all these stylistic Pokemon?
+
+How are we going to count the number of styles present for a single
+function?
+
+```{r}
+# Which of the coding-name-styles are matched by the parameters
+# of a given function?
+matches <- function(fun) {
+  params <- names(formals(fun))
+  sapply(style_regexes, function(regex){
+    any(rex::re_matches(params, regex))
+    })
+}
+```
+
+How are we going to get the names of all the functions in my attached packages?
+
+```{r}
+# https://stackoverflow.com/questions/20535247/seeking-functions-in-a-package
+
+# lsf.str("package:<pkg_name>") can be used to get all function names from the
+# package `pkg_name` (this must have been loaded into R first)
+
+# all the attached packages
+packages <- c(
+  sessionInfo()$basePkgs,
+  names(sessionInfo()$otherPkgs)
+)
+
+# all the functions within those packages:
+function_names <- unlist(
+  Map(
+    function(pkg) {
+      lsf.str(paste0("package:", pkg))
+    },
+    packages
+  )
+)
+
+names(function_names) <- NULL
+```
+
+That gives us `r length(function_names)` functions to consider.
+
+Which formats (columns) are present for each function (row)?
+
+```{r}
+formats_by_function <- t(sapply(function_names, matches))
+```
+
+Which function has caught the most formats?
+
+```{r}
+fun <- rownames(formats_by_function)[which.max(rowSums(formats_by_function))]
+
+t(formats_by_function[fun, , drop = FALSE])
+```
+
+```{r, comment = ""}
+args(fun)
+```
+
+Well done Fisher, but you didn't catch them all!
