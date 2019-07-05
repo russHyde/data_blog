@@ -1,0 +1,98 @@
+---
+title: '`dupree`'
+author: Russ Hyde
+date: '2019-07-05'
+slug: dupree
+categories: []
+tags:
+  - code-analysis
+  - rstats
+lastmod: '2019-07-05T18:06:58+01:00'
+layout: post
+type: post
+highlight: no
+---
+
+**`dupree`: All files are the same, but some are samier than others**
+
+... and on that dark and stormy night, the fabled _real programmers_ came down
+from Mount Partition. It is said they smell your code before it is even
+written.
+
+The sources of duplication are everywhere
+
+We've all copied & pasted stuff. "Screw it, it worked then and it'll work
+now!". "Could you add a graph like you did the other week into this report?
+You've got til yesterday".
+
+And to-be-fair, abstracting code is a bit more complicated than just bloating
+out more code. Hell, if you write functions, you might have to test them...
+
+I write a lot of analysis code. Sometimes I duplicate things in different
+projects, sometimes I do it in the same project, sometimes I do it in the same
+file. Most duplication doesn't matter - I've written `library(dplyr)` in enough
+scripts to know trivial duplication.
+
+But if you have long bits of code that have substantial duplication between
+them they can quickly come back to bite you.
+
+I couldn't find an R package to identify code duplication in/between scripts,
+packages and projects so I wrote one:
+[`dupree`](https://github.com/russHyde/dupree).
+
+Code duplication programs can be _really_ complicated. This one isn't. It
+converts the code blocks in your files into sentences and finds stretches of
+common 'text' within those sentences. There isn't an abstract syntax tree in
+sight. 
+
+Plus it's slow.
+
+Triumphantly slow.
+
+If you're working on a big package this is _not_ the tool for you.
+
+Given that my day job involves aligning lots of little 70-character sentences
+against one massive 3-billion-character sentence, I was rather proud of how
+slowly `dupree` aligns things against things.
+
+Here's some code
+
+```{r, echo = FALSE}
+code <- "
+library(dplyr)
+data(iris)
+
+summary(iris)
+
+lm(Sepal.Length ~ Petal.Length, data = filter(iris, Species == \"setosa\"))
+lm(Sepal.Length ~ Petal.Length, data = filter(iris, Species == \"versicolor\"))
+lm(Sepal.Length ~ Petal.Length, data = filter(iris, Species == \"virginica\"))
+"
+f <- tempfile(pattern = "", fileext = ".R")
+cat(code, file = f)
+```
+
+```{r, code = readLines(f), message = FALSE}
+```
+
+Now I've saved that code in a temporary file. Let's have a look for any
+duplication within it.
+
+```{r}
+if (! "dupree" %in% installed.packages()){
+  devtools::install_github(repo = "russHyde/dupree", dependencies = FALSE)
+}
+  
+library(dupree)
+
+dupree::dupree(f, min_block_size = 10)
+```
+
+Russ will be right back
+
+<!-- 
+Are code smells still relevant to data analysts?
+
+Be careful of overzealous deduplication: you might have to read that again
+someday!
+-->
