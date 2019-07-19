@@ -57,16 +57,25 @@ slowly `dupree` aligns things against things.
 
 Here's some code
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, message = FALSE}
 code <- "
+# block 1
 library(dplyr)
+
+# block 2
 data(iris)
 
+# block 3
 summary(iris)
 
+# block 4
 lm(Sepal.Length ~ Petal.Length, data = filter(iris, Species == \"setosa\"))
+
+# block 5
 lm(Sepal.Length ~ Petal.Length, data = filter(iris, Species == \"versicolor\"))
-lm(Sepal.Length ~ Petal.Length, data = filter(iris, Species == \"virginica\"))
+
+# block 6
+lm(Sepal.Length ~ Petal.Length, qr = FALSE, data = filter(iris, Species == \"virginica\"))
 "
 f <- tempfile(pattern = "", fileext = ".R")
 cat(code, file = f)
@@ -78,17 +87,87 @@ cat(code, file = f)
 Now I've saved that code in a temporary file. Let's have a look for any
 duplication within it.
 
-```{r}
+```{r, message = FALSE}
 if (! "dupree" %in% installed.packages()){
   devtools::install_github(repo = "russHyde/dupree", dependencies = FALSE)
 }
   
 library(dupree)
-
-dupree::dupree(f, min_block_size = 10)
 ```
 
-Russ will be right back
+```{r}
+dupree::dupree(f, min_block_size = 10) %>%
+  dplyr::select(-file_a, -file_b)
+```
+
+What was that? 
+
+`dupree` split the file into 6 different code blocks (those `# block X`
+comments aren't required for dupree to run, they're just illustrative)
+
+- It ignored all the comments
+
+- It disregarded the first three blocks (`library(dplyr)`, `data(iris)`,
+`summary(iris)`) because they were small (that's what the `min_block_size` argument was for)
+
+- Then it compared the final 3 code blocks against each other
+
+When `dupree` is ran, it compares each pair of (non-trivial) code blocks and
+computes a score that indicates how similar those blocks are. At present it
+reports at least one similarity score for each of those blocks (so block 4, 5
+and 6 are each present in at least one row of the results), but it doesn't
+report the results of comparing every pair of code blocks (block-5 versus
+block-6 was not reported because for each of these blocks the score for the comparison with block-4 is at least as large).
+
+The score is calculated in a pretty complicated way - but, the higher the
+score, the more similar two blocks are. Each of the code blocks is tokenized by
+converting the contained symbols (`lm`, `formula`, `Sepal.Length`,
+`Petal.Length`, ...; though commas and other trivial symbols are disregarded)
+to a unique integer - the `lm` in block-4 is converted to the same integer as
+the `lm` in block-5, but the integer for `lm` is different from that for
+`formula`. Tokenizing constructs a vector of integers for each code block and
+it is these integer-vectors that are compared to determine the similarity score
+between the code blocks. Our go-to black box for similarity calculation is
+`stringdist::seq_sim(..., method = "lcs")` - check it out!
+
+`dupree` works on single files, sets of files and there are a couple of helpers
+for working with a directory tree, or with an R package.
+
+Why would you use it? Because it may help you reduce the amount of code you
+have to write and because it may help you simplify the code you have already
+written.
+
+In a previous post I was talking about `lintr`. Lets clone it and see if there
+is much duplication within the code (as of July 2019).
+
+```{r, message = FALSE}
+lintr_path <- file.path(tempdir(), "lintr")
+lintr_repo <- git2r::clone("https://github.com/jimhester/lintr", lintr_path)
+lintr_dups <- dupree::dupree_package(
+  # use a higher min_block_size than we used above
+  lintr_path, min_block_size = 40
+)
+```
+
+Similarity scores across the reported code-block pairs are as follows:
+
+```{r}
+plot(lintr_dups$score, ylab = "Similarity score")
+```
+
+So there's a few code-blocks in there with a similarity score > 0.8. Here's
+some example files:
+
+```{r}
+lintr_dups %>%
+  dplyr::filter(score > 0.8 & file_a != file_b) %>%
+  dplyr::mutate_at(c("file_a", "file_b"), basename) %>%
+  head()
+```
+
+A lot of the linter-functions have exactly the same structure. Maybe there's an easier way to write linter-functions... [next time]
+
+(Ooo, I have a network image of the similarities in lintr in a recent talk I [gave](rpubs.com/russH/dupree-intro))
 
 <!-- 
 Are code smells still relevant to data analysts?
