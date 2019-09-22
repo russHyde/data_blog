@@ -73,11 +73,15 @@ Courses
 - Matthew Heiner and Herbie Lee have a course on MCMC and techniques for
 Bayesian statistics / probabilistic modelling at Coursera, which I can highly recommend. You'll need to be able to manipulate probability distributions first though.:
 
-    - [Bayesian Statistics: Techniques and Models](https://coursera.org/learn/mcmc-bayesian-statistics)
+    - [Bayesian Statistics: Techniques and Models](
+    https://coursera.org/learn/mcmc-bayesian-statistics)
 
 - Daphne Koller does a three-part course on Probabilistic graphical models
   through Coursera (it used Octave / Matlab when I did it, which I didn't care
   for) but, at the time (~ 2013?), I found the courses quite eye-opening.
+
+    - [Probabilistic Graphical Models Specialization](
+    https://coursera.org/specializations/probabilistic-graphical-models)
 
 Books
 
