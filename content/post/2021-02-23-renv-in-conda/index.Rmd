@@ -1,0 +1,154 @@
+---
+title: '`renv` in conda'
+author: Russ
+date: '2021-02-23'
+slug: []
+categories:
+  - R
+tags:
+  - project structure
+lastmod: '2021-02-23T11:56:34Z'
+layout: post
+type: post
+highlight: no
+---
+
+**Get your reproducibility here!**
+
+Reproducibility is nice. It's nice to be able to rerun a project from a couple
+of years ago and get the same results, reports and figures. It's even nicer if
+you can hand your project over to someone else, and they can generate the same
+results.
+
+But it takes a lot of work.
+
+What could change in the intervening couple-of-years, or on transfer from one
+computer to another, that would alter the results generated in a project?
+
+- the raw data could get moved, relabelled, appended, or lost
+- the source code could change,
+- the code might not even be written with reproducibility in mind (eg, not
+  setting random seeds; not using versioned data-releases)
+- literally any part of the software could be updated, deprecated or otherwise
+  changed
+
+Environment management tools can help with the latter issue (as can containers,
+of which I have less experience). Ideally, they allow you to store the details
+of any packages / libraries that are used when running a given project in the
+source-code for that project; then when you need to rerun the project, you can
+use those exact same packages.
+
+For the past few years, I have used
+[`conda`](https://docs.conda.io/projects/conda/en/latest/index.html)
+environments to handle all my research projects (which were mostly
+bioinformatics / genomics).
+
+The great thing about conda is it's language independence: you can specify
+project-dependencies from several worlds, be they python, R, command-line tools.
+It also simplifies installing packages, like numpy, that would otherwise involve
+installing a lot of low-level libraries. And it's a well established project.
+There's no point placing your reproducibility requirements in the hands of a
+tool that might not exist in two years time.
+
+Speaking from my (R-biased) viewpoint, conda has posed some problems as well:
+
+- There have been several times when I could no longer build a conda-environment
+from a previously valid specification. This is typically due to broken packages
+being removed from
+[anaconda.org](https://anaconda.org/) (the database that conda uses when
+installing packages).
+
+- Installing packages is a non-native experience. R user's are used to using `install.packages("somePackage")` to install packages from CRAN (this already
+handles the installation dependencies of 'somePackage'). But to add this to a
+conda environment you would use `conda install r-somepackage` at the command
+line.
+
+- Installing non-conda packages
+  - Installing a non-conda-package (eg, using `remotes::install_github`) can be
+  done. But, if that package depends on anything else that isn't yet in your
+  conda env, try and make sure the other packages are installed using
+  `conda install`.
+  - If the required package is available through CRAN, it's better to make a
+  conda skeleton for that package and install that through conda from your
+  personal anaconda account (details
+  [here](http://biolearnr.blogspot.com/2018/01/pushing-r-eulerr-onto-anaconda-using.html)).
+  - Where I developed local packages for use within an analysis project, they
+  were installed into the conda env using
+  `R CMD INSTALL -l <conda-path> <my-package.tar>` as part of a
+  [project-setup script](https://github.com/russHyde/data_buddy).
+
+- Multiple channels. For each package you might want to install, there are
+  multiple versions available, but also there are multiple 'channel's from which
+  the package could be obtained. For example, most bioinformatics-specific
+  packages are found in the ['bioconda' channel](https://bioconda.github.io/).
+  For more general R packages, there is the
+  ['r' channel](https://anaconda.org/r), and also the
+  ['conda-forge' channel](https://anaconda.org/conda-forge). I always install
+  things from conda-forge whenever there is a choice (it plays nicer with
+  bioconda, and, though this isn't a problem anymore, won't compel you to use
+  MRO)
+
+- Solving environments can take ages. This has been a major pain over the years.
+  Before it can install a package, conda has to ensure that a version of the
+  package (and any dependencies) can be found that will install alongside your
+  current environment (or find a way to modify your current environment so that
+  the package can be installed). Since there's lots of channels and lots of
+  versions of each package this can take a long time. And, if your environment
+  gets too big (a mistake I've made many times), it may be impossible to find
+  an installation recipe that is compatible with your environment.
+
+- Dev environment == Analysis environment. This is more of an R issue than a
+  conda issue (since I don't think 'renv' solves it either). It would be nice to
+  be able to have two related environments for a given project: one within which
+  the analyses run, and an expanded version of the analysis-env within which to
+  write & test code. Each extra package you add to a working environment
+  increases the chances that environment may break in the future. Though you
+  might want rstudio, devtools, testthat et al in the environment where you
+  write code, you shouldn't need to include those in the environment where your
+  analyses run.
+
+- IDE support. There are two ways to use rstudio alongside conda environments.
+  You either install rstudio system-wide, or you install it as part of a conda
+  environment. If you do the latter, you will be restricted to using an older
+  version of R and Rstudio (v1.1.456 as of Feb 2021). So, please, don't! You
+  only need a handful of R packages installed for rstudio to work (minimally),
+  but if you install rstudio via conda it will add dozens of dependencies to
+  your environment. If on linux, you're better to activate an environment that
+  contains r-base and r-rstudioapi (and a few other libraries) and install
+  rstudio from the command line. Then, start rstudio from the command line and
+  it will work using whichever R is present in the activated environment.
+
+Ultimately, try to avoid environment bloat and you'll be happy.
+
+## renv
+
+[{renv}](https://rstudio.github.io/renv/articles/renv.html) (and it's
+predecessor {packrat}) is an R-specific environment management tool. To use it
+in a new project you run the following:
+
+```
+renv::init()
+```
+
+That will start a blank environment (only containing the base R packages, like
+`stats` and `graphics`) based upon the R release that you are using. Then any
+time you need to install an R package for use in your project, call
+`install.packages()` or `install_github()`. The packages will be installed into
+(or linked from) a project-specific package directory. Then you can call
+
+```
+renv::snapshot()
+```
+
+and it will store the details of all the packages that your project is using, in
+such a way that you could load up that project on another computer and easily
+generate the same environment (to do this call `renv::restore()`).
+
+For this blog, I have
+- a minimal conda environment that contains `r-base`, `r-renv` and
+`r-rstudioapi`;
+- rstudio installed system-wide;
+- and an renv-defined environment that manages all the R packages used while
+writing (blogdown etc).
+
+And, oh joy, I can install packages in seconds again!
