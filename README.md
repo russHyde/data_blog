@@ -1,5 +1,7 @@
 Content for my personal blog: http://russ-hyde.rbind.io/
 
+# Environments
+
 The environment for building the website works as follows.
 
 - Rstudio is installed outside of an environment
@@ -7,9 +9,26 @@ The environment for building the website works as follows.
   activated `conda activate blog-base`
 - R packages are specified using {renv}
 - Rstudio can be opened from the command line, provided you have activated the
-  blog-base environment `rstudio data_blog.Rproj &`
+  blog-base environment `rstudio data-globs.Rproj &`
 
-# Converting from full-conda to conda-and-renv
+## To activate the blog environment
+
+```
+# Activate the conda environment on which r-base is installed
+conda activate blog-base
+
+# Then open rstudio, and the 'renv'-defined environment for the project will
+# be activated automatically
+rstudio data-globs.Rproj &
+```
+
+## When working on the blog
+
+In rstudio click "Addins -> Serve Site" or use `blogdown::serve_site()` once
+
+Click "Addins -> New Post" to add a new blog entry
+
+## Notes on converting from full-conda to conda-and-renv
 
 Steps to get the blog building under the renv setup:
 
