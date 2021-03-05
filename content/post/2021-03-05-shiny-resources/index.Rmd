@@ -1,0 +1,56 @@
+---
+title: Shiny Resources
+author: Russ
+date: '2021-03-05'
+slug: []
+categories:
+  - R
+tags:
+  - shiny
+  - rstats
+lastmod: '2021-03-05T15:28:48Z'
+layout: post
+type: post
+highlight: no
+---
+
+On the
+["R-for-data-science" community](https://www.rfordatasci.com/) slack channel, we
+are currently running a book-club to study
+["Mastering Shiny"](https://mastering-shiny.org/index.html) by Hadley Wickham
+(on Tuesdays at 5PM GMT).
+
+Here are some resources that you might find useful if learning "shiny".
+
+## General
+
+Cheat sheets:
+
+- [https://github.com/rstudio/cheatsheets/raw/master/shiny.pdf]
+
+Books:
+
+- [Engineering Production-Grade Shiny Apps](https://engineering-shiny.org/)
+- [Outstanding User Interfaces with Shiny](https://unleash-shiny.rinterface.com/)
+
+Competitions & Examples:
+
+- [Shiny Gallery](https://shiny.rstudio.com/gallery/)
+- [Winners of the 2020 Annual Shiny Contest](https://blog.rstudio.com/2020/07/13/winners-of-the-2nd-shiny-contest/)
+
+Awesome Lists:
+
+- [Awesome RShiny](https://grabear.github.io/awesome-rshiny/)
+- [Awesome Shiny Extensions](https://github.com/nanxstats/awesome-shiny-extensions)
+
+## Deployment
+
+There are detailed notes on deploying to shinyapps.io in their User's guide:
+
+- [https://docs.rstudio.com/shinyapps.io/getting-started.html#deploying-applications]
+
+Notes on how to setup Digital Ocean or AWS to deploy shiny apps can be found
+here (thanks to TanHo for pointing these out):
+
+- [https://deanattali.com/2015/05/09/setup-rstudio-shiny-server-digital-ocean/]
+- [https://www.charlesbordet.com/en/guide-shiny-aws/]
