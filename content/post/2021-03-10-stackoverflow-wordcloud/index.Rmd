@@ -1,0 +1,37 @@
+---
+title: "Shiny App: StackOverflow WordCloud"
+author: russ
+date: '2021-03-10'
+slug: []
+categories:
+  - R
+tags:
+  - shiny
+lastmod: '2021-03-10T11:16:41Z'
+layout: post
+type: post
+highlight: no
+---
+
+**Who answers what on Stack Overflow?**
+
+Here's a little [Shiny App](https://russ-hyde.shinyapps.io/stackover-wordcloud/)
+I made that takes a Stack-Overflow User ID, finds out what subjects (tags) they
+answer about on Stack Overflow, and creates a wordcloud of their most frequent
+tags.
+
+The source code can be found [here](https://github.com/russHyde/stackover-wordcloud).
+
+It uses
+
+- the [stackr](https://github.com/dgrtwo/stackr) package for accessing the Stack Exchange API;
+- and the CRAN package
+[wordcloud](https://cran.r-project.org/web/packages/wordcloud/index.html) for drawing the image.
+
+The default image is my own wordcloud, and given the dominance of 'r', 'python',
+'snakemake' and 'conda' reflects my data analysis / bioinformatics life.
+
+I suspect it would be a very different image if the word sizes were proportional
+to a ratio of my answer count and the global answer count for each tag, since
+for example, I probably answer far more niche lintr questions than the average
+user.
